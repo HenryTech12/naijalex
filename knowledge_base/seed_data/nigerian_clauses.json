@@ -1,0 +1,162 @@
+[
+    {
+        "clause_type": "auto_renewal",
+        "common_wording": "This lease shall automatically renew for a further term of one year unless notice is given 90 days prior.",
+        "plain_english": "The contract will restart itself for another year if you don't say you want to stop it at least 3 months early.",
+        "risk_level": "Caution",
+        "legal_reference": "Lagos State Tenancy Law 2011",
+        "recommended_action": "Negotiate to require written consent for renewal."
+    },
+    {
+        "clause_type": "personal_guarantee",
+        "common_wording": "The Director hereby personally guarantees the performance of all obligations under this agreement.",
+        "plain_english": "If the business cannot pay, you must pay with your own personal money and assets.",
+        "risk_level": "Critical",
+        "legal_reference": "CAMA 2020",
+        "recommended_action": "Remove if possible, or limit to a specific amount."
+    },
+    {
+        "clause_type": "penalty_interest",
+        "common_wording": "Late payments shall attract interest at the rate of 10% per month compounding.",
+        "plain_english": "If you pay late, they will add a very high extra cost (interest) every month.",
+        "risk_level": "Critical",
+        "legal_reference": "CBN Consumer Protection Framework",
+        "recommended_action": "Negotiate to reduce to a reasonable annual rate."
+    },
+    {
+        "clause_type": "jurisdiction_waiver",
+        "common_wording": "The parties hereby waive any right to any other jurisdiction and submit to the courts of New York.",
+        "plain_english": "If there is a problem, you have to go to a court in America, not Nigeria.",
+        "risk_level": "Critical",
+        "legal_reference": "Constitution of Nigeria 1999",
+        "recommended_action": "Change jurisdiction to Nigeria, specifically the state where you operate."
+    },
+    {
+        "clause_type": "ip_assignment",
+        "common_wording": "All intellectual property created during the term shall belong exclusively to the Company.",
+        "plain_english": "Anything you create while working here belongs to the company, not you.",
+        "risk_level": "Standard",
+        "legal_reference": "Copyright Act 2022",
+        "recommended_action": "Clarify that this only applies to work done specifically for the company."
+    },
+    {
+        "clause_type": "exclusivity",
+        "common_wording": "The Agent shall not provide similar services to any other person or entity in Nigeria.",
+        "plain_english": "You are not allowed to work for any other person who does this same type of business in Nigeria.",
+        "risk_level": "Caution",
+        "legal_reference": "Federal Competition and Consumer Protection Act (FCCPA)",
+        "recommended_action": "Limit the exclusivity to specific competitors or a shorter time."
+    },
+    {
+        "clause_type": "force_majeure",
+        "common_wording": "Neither party shall be liable for failure to perform due to acts of God, war, or government action.",
+        "plain_english": "If something big happens that nobody can control (like a natural disaster), nobody is in trouble for not finishing the job.",
+        "risk_level": "Standard",
+        "legal_reference": "Common Law",
+        "recommended_action": "Ensure 'government action' includes changes in law that affect the contract."
+    },
+    {
+        "clause_type": "indemnity",
+        "common_wording": "The Contractor shall indemnify and hold harmless the Client from any and all claims.",
+        "plain_english": "If someone sues the client because of what you did, you have to pay for the client's lawyers and any fines.",
+        "risk_level": "Caution",
+        "legal_reference": "Common Law",
+        "recommended_action": "Limit indemnity to claims arising directly from your negligence."
+    },
+    {
+        "clause_type": "termination_penalty",
+        "common_wording": "Termination by the Client shall require payment of the full contract value as liquidated damages.",
+        "plain_english": "If you stop the contract early, you still have to pay the full price of the whole job.",
+        "risk_level": "Critical",
+        "legal_reference": "Common Law / Contract Law",
+        "recommended_action": "Change to only pay for work already done plus a small exit fee."
+    },
+    {
+        "clause_type": "confidentiality_overreach",
+        "common_wording": "The Employee shall not disclose any information about the Company for a period of 50 years.",
+        "plain_english": "You must keep everything about the company secret for 50 years after you leave.",
+        "risk_level": "Caution",
+        "legal_reference": "CAMA 2020",
+        "recommended_action": "Reduce the duration to a more reasonable 2-5 years."
+    },
+    {
+        "clause_type": "arbitration",
+        "common_wording": "Any dispute shall be settled by final and binding arbitration in London.",
+        "plain_english": "If you fight, you go to a private judge (arbitrator) in London instead of a regular court.",
+        "risk_level": "Caution",
+        "legal_reference": "Arbitration and Mediation Act 2023",
+        "recommended_action": "Ensure the location of arbitration is in Nigeria (e.g. Lagos Court of Arbitration)."
+    },
+    {
+        "clause_type": "payment_delay",
+        "common_wording": "The Client shall pay all invoices within 180 days of receipt.",
+        "plain_english": "The client can wait up to 6 months before they pay you for your work.",
+        "risk_level": "Caution",
+        "legal_reference": "Commercial Practice",
+        "recommended_action": "Negotiate for payment within 30 days."
+    },
+    {
+        "clause_type": "variation_clause",
+        "common_wording": "The Company reserves the right to change these terms at any time without notice.",
+        "plain_english": "The company can change the rules whenever they want and they don't have to tell you.",
+        "risk_level": "Critical",
+        "legal_reference": "FCCPA",
+        "recommended_action": "Require a written agreement signed by both parties for any changes."
+    },
+    {
+        "clause_type": "limitation_of_liability",
+        "common_wording": "The Company's total liability shall not exceed the amount paid for one month of service.",
+        "plain_english": "If the company causes a huge problem for you, the most they will ever pay you back is one month's fee.",
+        "risk_level": "Caution",
+        "legal_reference": "Common Law",
+        "recommended_action": "Increase the limit to be equal to the total contract value or insurance coverage."
+    },
+    {
+        "clause_type": "right_to_audit",
+        "common_wording": "The Client may enter the Contractor's premises at any time to audit all records.",
+        "plain_english": "The client can walk into your office whenever they want to look at all your papers and computers.",
+        "risk_level": "Caution",
+        "legal_reference": "Privacy Laws",
+        "recommended_action": "Require at least 48 hours notice and limit the audit to contract-related documents."
+    },
+    {
+        "clause_type": "subcontracting_ban",
+        "common_wording": "The Contractor shall not subcontract any part of the services without prior written consent.",
+        "plain_english": "You are not allowed to hire someone else to help you do the job unless the client says yes in writing.",
+        "risk_level": "Standard",
+        "legal_reference": "Common Law",
+        "recommended_action": "Ensure consent cannot be unreasonably withheld."
+    },
+    {
+        "clause_type": "governing_law_nigeria",
+        "common_wording": "This agreement shall be governed by the laws of the Federal Republic of Nigeria.",
+        "plain_english": "This contract follows the laws of Nigeria.",
+        "risk_level": "Standard",
+        "legal_reference": "Constitution of Nigeria 1999",
+        "recommended_action": "Accept."
+    },
+    {
+        "clause_type": "non_compete",
+        "common_wording": "The Employee shall not work for any competitor within a 50km radius for 3 years.",
+        "plain_english": "After you leave, you cannot get a job with a similar company nearby for the next 3 years.",
+        "risk_level": "Caution",
+        "legal_reference": "Common Law Restraint of Trade",
+        "recommended_action": "Reduce the time and distance to what is strictly necessary to protect trade secrets."
+    },
+    {
+        "clause_type": "severability",
+        "common_wording": "If any part of this agreement is found invalid, the rest of the agreement remains in force.",
+        "plain_english": "If a judge says one small rule in this contract is bad, all the other rules still apply.",
+        "risk_level": "Standard",
+        "legal_reference": "Common Law",
+        "recommended_action": "Accept."
+    },
+    {
+        "clause_type": "entire_agreement",
+        "common_wording": "This document contains the entire agreement between the parties.",
+        "plain_english": "Only what is written in this paper counts. Any promises made in person or over the phone don't matter.",
+        "risk_level": "Standard",
+        "legal_reference": "Common Law",
+        "recommended_action": "Make sure everything important that was told to you is written in the contract."
+    }
+]

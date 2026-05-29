@@ -1,0 +1,32 @@
+[
+    {
+        "law_name": "Land Use Act 1978",
+        "jurisdiction": "Federal / State",
+        "summary": "Governs all land ownership and usage in Nigeria. Vests all land in the Governor of each state who holds it in trust for the people.",
+        "key_provisions": ["Governor's consent required for transfer", "Right of Occupancy", "Compensation for revocation"]
+    },
+    {
+        "law_name": "Companies and Allied Matters Act (CAMA) 2020",
+        "jurisdiction": "Federal",
+        "summary": "Main law for business registration and regulation. Introduced single-member companies and limited liability partnerships.",
+        "key_provisions": ["Electronic signatures valid", "Small company exemptions", "Business name registration"]
+    },
+    {
+        "law_name": "CBN Consumer Protection Framework",
+        "jurisdiction": "Federal",
+        "summary": "Regulates how banks and financial institutions treat customers. Prevents excessive interest and hidden charges.",
+        "key_provisions": ["Right to transparency", "Fair treatment", "Redress mechanisms"]
+    },
+    {
+        "law_name": "Lagos State Tenancy Law 2011",
+        "jurisdiction": "Lagos State",
+        "summary": "Regulates relationship between landlords and tenants in Lagos. Controls advance rent payment.",
+        "key_provisions": ["One year max rent for new tenants", "6 months notice for yearly tenants", "Court process for eviction"]
+    },
+    {
+        "law_name": "Federal Competition and Consumer Protection Act (FCCPA)",
+        "jurisdiction": "Federal",
+        "summary": "Protects consumers from unfair business practices and promotes competition.",
+        "key_provisions": ["Prohibits price fixing", "Right to quality services", "Unfair contract terms are void"]
+    }
+]
