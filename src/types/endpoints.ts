@@ -1,0 +1,162 @@
+import type { EndpointConfig } from './index';
+
+export const ENDPOINTS: EndpointConfig[] = [
+  // Health
+  {
+    id: 'health-get',
+    category: 'Health',
+    method: 'GET',
+    path: '/api/v1/health',
+    name: 'Health Check',
+    description: 'Check if the API and all services are healthy.',
+    hasBody: false,
+    hasFormData: false,
+    pathParams: [],
+    queryParams: [],
+    sampleResponse: {
+      status: 'ok',
+      db: 'ok',
+      redis: 'ok',
+      llm: 'ok',
+    },
+  },
+
+  // Users
+  {
+    id: 'users-create',
+    category: 'Users',
+    method: 'POST',
+    path: '/api/v1/users/',
+    name: 'Create User',
+    description: 'Create a new user profile with business info.',
+    hasBody: true,
+    hasFormData: false,
+    pathParams: [],
+    queryParams: [],
+    sampleRequest: {
+      phone_number: '+2348012345678',
+      business_type: 'SME',
+      industry: 'Retail',
+      risk_tolerance: 'medium',
+      typical_contracts: ['lease', 'supplier agreement'],
+    },
+    sampleResponse: {
+      id: '550e8400-e29b-41d4-a716-446655440000',
+      phone_number: '+2348012345678',
+      business_type: 'SME',
+      industry: 'Retail',
+      created_at: '2024-01-15T10:30:00Z',
+    },
+  },
+  {
+    id: 'users-profile',
+    category: 'Users',
+    method: 'GET',
+    path: '/api/v1/users/{user_id}/profile',
+    name: 'Get User Profile',
+    description: 'Fetch a user profile by their ID.',
+    hasBody: false,
+    hasFormData: false,
+    pathParams: ['user_id'],
+    queryParams: [],
+    sampleResponse: {
+      id: '550e8400-e29b-41d4-a716-446655440000',
+      phone_number: '+2348012345678',
+      business_type: 'SME',
+      industry: 'Retail',
+      risk_tolerance: 'medium',
+      created_at: '2024-01-15T10:30:00Z',
+    },
+  },
+
+  // Documents
+  {
+    id: 'documents-analyze',
+    category: 'Documents',
+    method: 'POST',
+    path: '/api/v1/documents/analyze',
+    name: 'Analyze Document',
+    description: 'Upload a document for AI analysis. Returns an analysis_id to poll for results.',
+    hasBody: false,
+    hasFormData: true,
+    pathParams: [],
+    queryParams: [],
+    sampleResponse: {
+      analysis_id: 'bd94ddd4-13d7-4393-8bc5-d5c85593334a',
+      status: 'processing',
+      estimated_seconds: 30,
+    },
+  },
+  {
+    id: 'documents-analysis',
+    category: 'Documents',
+    method: 'GET',
+    path: '/api/v1/documents/analysis/{analysis_id}',
+    name: 'Get Analysis',
+    description: 'Fetch the analysis result. Poll until status != "processing".',
+    hasBody: false,
+    hasFormData: false,
+    pathParams: ['analysis_id'],
+    queryParams: [],
+    sampleResponse: {
+      id: '512aa44b-6a61-4c42-8364-1b40cc304a83',
+      document_id: 'abc123',
+      language_mode: 'english',
+      overall_risk: 'Medium',
+      summary: 'This contract has several concerning clauses...',
+      top_3_actions: ['Review clause 5.2', 'Negotiate penalty terms', 'Add termination clause'],
+      status: 'complete',
+      clauses: [],
+      processing_time_ms: 28500,
+      risk_card_url: 'https://res.cloudinary.com/.../risk_card.pdf',
+    },
+  },
+
+  // Risk Cards
+  {
+    id: 'risk-card-get',
+    category: 'Risk Cards',
+    method: 'GET',
+    path: '/api/v1/risk-card/{analysis_id}',
+    name: 'Get Risk Card',
+    description: 'Fetch the risk card PDF URL for an analysis.',
+    hasBody: false,
+    hasFormData: false,
+    pathParams: ['analysis_id'],
+    queryParams: ['refresh', 'redirect'],
+    sampleResponse: {
+      analysis_id: '512aa44b-6a61-4c42-8364-1b40cc304a83',
+      risk_card_url: 'https://res.cloudinary.com/.../risk_card_....pdf',
+    },
+  },
+
+  // WhatsApp
+  {
+    id: 'whatsapp-webhook',
+    category: 'WhatsApp',
+    method: 'POST',
+    path: '/api/v1/webhook/whatsapp',
+    name: 'WhatsApp Webhook',
+    description: 'Simulate a WhatsApp webhook payload for document analysis.',
+    hasBody: false,
+    hasFormData: true,
+    pathParams: [],
+    queryParams: [],
+    sampleRequest: {
+      SmsMessageSid: 'SM1234567890abcdef',
+      NumMedia: '1',
+      ProfileName: 'John Doe',
+      MessageType: 'media',
+      From: 'whatsapp:+2348012345678',
+      To: 'whatsapp:+2348000000000',
+      Body: '',
+      MediaUrl0: 'https://example.com/doc.pdf',
+      MediaContentType0: 'application/pdf',
+    },
+    sampleResponse: {
+      success: true,
+    },
+  },
+];
+
+export const CATEGORIES = ['Health', 'Users', 'Documents', 'Risk Cards', 'WhatsApp'];
