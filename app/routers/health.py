@@ -1,41 +1,57 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from sqlalchemy import text
-from app.database import AsyncSession
-from app.deps import get_db, get_redis
-from redis.asyncio import Redis
 from app.config import settings
 from openai import AsyncOpenAI
+
+# Import internals directly so the health endpoint can attempt its own
+# connections and report errors instead of relying on FastAPI dependency
+# resolution (which would convert dependency errors into 500 responses
+# with less controlled output).
+from app import database
+from app.redis_client import redis_client
 
 router = APIRouter(tags=["Health"])
 
 @router.get("/health")
-async def health_check(
-    db: AsyncSession = Depends(get_db),
-    redis: Redis = Depends(get_redis)
-):
+async def health_check():
     health = {"status": "ok", "db": "ok", "redis": "ok", "llm": "ok"}
-    
-    # Check DB
+
+    # Check DB by creating a short-lived session and executing a lightweight query
     try:
-        await db.execute(text("SELECT 1"))
-    except Exception:
+        async with database.async_session() as session:
+            await session.execute(text("SELECT 1"))
+    except Exception as e:
         health["db"] = "error"
         health["status"] = "error"
-        
-    # Check Redis
+        # include minimal hint for debugging in logs but keep response small
+        try:
+            import logging
+            logging.getLogger("naijalex").warning("Health DB check failed: %s", e)
+        except Exception:
+            pass
+
+    # Check Redis using the configured client
     try:
-        await redis.ping()
-    except Exception:
+        await redis_client.ping()
+    except Exception as e:
         health["redis"] = "error"
         health["status"] = "error"
-        
-    # Check LLM (minimal test)
+        try:
+            import logging
+            logging.getLogger("naijalex").warning("Health Redis check failed: %s", e)
+        except Exception:
+            pass
+
+    # Check LLM minimal: ensure API key is present
     try:
-        client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
-        # We won't actually call it to save credits, just check key
         if not settings.OPENAI_API_KEY:
             health["llm"] = "error"
-    except Exception:
+    except Exception as e:
         health["llm"] = "error"
-        
+        try:
+            import logging
+            logging.getLogger("naijalex").warning("Health LLM check failed: %s", e)
+        except Exception:
+            pass
+
     return health

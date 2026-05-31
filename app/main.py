@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.config import settings
 from app.routers import health, users, documents, risk_cards, whatsapp
-from app.database import engine, Base
+from app import database
 from app.services.knowledge_base import seed_knowledge_base
 import time
 import logging
@@ -48,13 +48,16 @@ app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads"
 
 @app.on_event("startup")
 async def startup_event():
+    # Ensure engine is usable (may fall back to sqlite on auth/connection errors)
+    await database.ensure_engine()
+
     # Ensure tables exist
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    
+    async with database.engine.begin() as conn:
+        await conn.run_sync(database.Base.metadata.create_all)
+
     # Seed knowledge base
     seed_knowledge_base()
-    
+
     logger.info("NaijaLex Backend Started Successfully")
 
 @app.get("/")

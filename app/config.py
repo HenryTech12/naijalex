@@ -11,6 +11,11 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str
     REDIS_URL: str
+    # Fallback controls
+    ALLOW_DB_FALLBACK: bool = False
+    ALLOW_REDIS_FALLBACK: bool = False
+    # DB SSL verification: set to false to accept self-signed certs (local/dev)
+    DB_SSL_VERIFY: bool = False
     
     # Twilio
     TWILIO_ACCOUNT_SID: str = ""
@@ -25,3 +30,5 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 settings = Settings()
+
+# reload-trigger: no-op comment to prompt dev reloads
