@@ -17,9 +17,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Ensure upload directories exist
-RUN mkdir -p uploads/risk_cards chroma_db
+# Create runtime directories and a non-root user, then set ownership
+RUN mkdir -p /app/uploads/risk_cards /app/chroma_db \
+    && groupadd -r app && useradd -r -g app -d /home/app -s /sbin/nologin app \
+    && chown -R app:app /app/uploads /app/chroma_db
 
 EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run as non-root user for better security
+USER app
+
+# Use PORT env var when available; default to 8000
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
