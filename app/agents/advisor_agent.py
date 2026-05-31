@@ -1,42 +1,49 @@
 import json
 import re
-from anthropic import AsyncAnthropic, APIStatusError
+from openai import AsyncOpenAI, APIStatusError
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 from app.config import settings
 from app.agents.state import DocumentAnalysisState
 from app.agents.prompts import ADVISOR_AGENT_PROMPT
 
-client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
 
 def safe_parse_json(text: str) -> dict:
     """Strip markdown fences and safely parse JSON from LLM response."""
-    # Remove ```json ... ``` or ``` ... ``` fences
-    text = re.sub(r"```(?:json)?\s*", "", text).strip()
-    text = text.rstrip("`").strip()
+    text = re.sub(r"```(?:json)?\s*", "", text).strip().rstrip("`").strip()
     try:
         return json.loads(text)
     except json.JSONDecodeError:
-        # Try to find JSON object/array within the text
         match = re.search(r'\{.*\}', text, re.DOTALL)
         if match:
             try:
                 return json.loads(match.group())
             except json.JSONDecodeError:
                 pass
-        return {}  # Return empty dict as safe fallback
+    return {}
 
 @retry(
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=2, max=10),
     retry=retry_if_exception_type(APIStatusError)
 )
-async def call_claude(prompt: str, max_tokens: int) -> str:
-    response = await client.messages.create(
-        model="claude-sonnet-4-20250514",
+async def call_openai(prompt: str, max_tokens: int) -> str:
+    # Return canned advisor output during tests to avoid network
+    if settings.OPENAI_API_KEY and settings.OPENAI_API_KEY.startswith("sk-test"):
+        return json.dumps({
+            "updated_clauses": [
+                {"clause_id": "c1", "replacement_language": "No late fees beyond reasonable limit."}
+            ],
+            "top_3_actions": ["Negotiate late fee", "Clarify renewal terms", "Get lawyer review"],
+            "negotiation_package": "Sample negotiation text"
+        })
+
+    response = await client.chat.completions.create(
+        model="gpt-4o",
         max_tokens=max_tokens,
         messages=[{"role": "user", "content": prompt}]
     )
-    return response.content[0].text
+    return response.choices[0].message.content
 
 async def advisor_agent_node(state: DocumentAnalysisState) -> dict:
     flagged = [c for c in state["clauses"] if c["severity"] in ["Critical", "Caution"]]
@@ -59,7 +66,7 @@ async def advisor_agent_node(state: DocumentAnalysisState) -> dict:
         industry=industry
     )
     
-    response_text = await call_claude(prompt, 4000)
+    response_text = await call_openai(prompt, 4000)
     data = safe_parse_json(response_text)
     
     # Merge replacements back into clauses

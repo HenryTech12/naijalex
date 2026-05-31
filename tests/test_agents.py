@@ -24,8 +24,8 @@ async def test_full_pipeline(db_session):
     # For hackathon tests, we usually mock or use a small model. 
     # Here we'll try to run if key exists, else skip.
     import os
-    if not os.getenv("ANTHROPIC_API_KEY"):
-        pytest.skip("ANTHROPIC_API_KEY not set")
+    if not os.getenv("OPENAI_API_KEY"):
+        pytest.skip("OPENAI_API_KEY not set")
         
     result = await run_pipeline(
         document_id=str(uuid.uuid4()),

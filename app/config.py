@@ -3,7 +3,7 @@ from pydantic import Field
 
 class Settings(BaseSettings):
     # API Keys
-    ANTHROPIC_API_KEY: str
+    OPENAI_API_KEY: str
     LANGCHAIN_API_KEY: str = ""
     LANGCHAIN_TRACING_V2: str = "true"
     LANGCHAIN_PROJECT: str = "naijalex"

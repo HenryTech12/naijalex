@@ -3,8 +3,8 @@ import asyncio
 import os
 
 # Set environment variables for testing BEFORE importing the app
-os.environ["ANTHROPIC_API_KEY"] = "sk-test-key"
-os.environ["DATABASE_URL"] = "postgresql+asyncpg://user:password@localhost:5432/naijalex_test"
+os.environ["OPENAI_API_KEY"] = "sk-test-key"
+os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///./test.db"
 os.environ["REDIS_URL"] = "redis://localhost:6379/1"
 os.environ["LANGCHAIN_API_KEY"] = "test"
 

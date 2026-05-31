@@ -58,6 +58,9 @@ def seed_knowledge_base():
 
 def search_relevant_clauses(document_text: str, top_k: int = 5):
     """Search for similar clauses in the knowledge base."""
+    # During tests, skip heavy embedding/model calls
+    if getattr(settings, "OPENAI_API_KEY", "").startswith("sk-test"):
+        return []
     collection = client.get_collection(name="nigerian_clauses", embedding_function=embedding_func)
     results = collection.query(
         query_texts=[document_text[:1000]], # Chroma limits

@@ -154,11 +154,11 @@ async def whatsapp_webhook(
                     analysis = res.scalar_one_or_none()
                 
                 if analysis:
-                    from anthropic import AsyncAnthropic
+                    from openai import AsyncOpenAI
                     from app.config import settings
-                    claude = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
-                    
-                    followup_prompt = f"""You are NaijaLex, a Nigerian legal assistant. 
+                    openai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+
+                    followup_prompt = f"""You are NaijaLex, a Nigerian legal assistant.
 A user just analyzed a contract with these results:
 - Overall Risk: {analysis.overall_risk}
 - Summary: {analysis.summary}
@@ -169,12 +169,12 @@ The user is now asking: "{body}"
 Answer their question in friendly Lagos Pidgin English. Keep your answer short (under 200 words).
 Be specific to their contract analysis. End with "Any other question? I dey here!" """
 
-                    response = await claude.messages.create(
-                        model="claude-sonnet-4-20250514",
+                    response = await openai_client.chat.completions.create(
+                        model="gpt-4o",
                         max_tokens=500,
                         messages=[{"role": "user", "content": followup_prompt}]
                     )
-                    reply = response.content[0].text
+                    reply = response.choices[0].message.content
                     await whatsapp_service.send_message(phone_number, reply)
                     await session_service.set_state(phone_number, "followup")
                 else:

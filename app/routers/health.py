@@ -4,7 +4,7 @@ from app.database import AsyncSession
 from app.deps import get_db, get_redis
 from redis.asyncio import Redis
 from app.config import settings
-from anthropic import AsyncAnthropic
+from openai import AsyncOpenAI
 
 router = APIRouter(tags=["Health"])
 
@@ -31,9 +31,9 @@ async def health_check(
         
     # Check LLM (minimal test)
     try:
-        client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+        client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
         # We won't actually call it to save credits, just check key
-        if not settings.ANTHROPIC_API_KEY:
+        if not settings.OPENAI_API_KEY:
             health["llm"] = "error"
     except Exception:
         health["llm"] = "error"
