@@ -2,16 +2,43 @@ import chromadb
 from chromadb.utils import embedding_functions
 import json
 import os
+import tempfile
 from app.config import settings
 
-# Initialize ChromaDB
-client = chromadb.PersistentClient(path=settings.CHROMA_PERSIST_DIR)
 embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(
     model_name="paraphrase-multilingual-mpnet-base-v2"
 )
 
+_chroma_client = None
+
+
+def _init_chroma_client():
+    """Create a Chroma client lazily.
+
+    Some deploy targets mount the application filesystem read-only. In that
+    case, fall back to a writable temp directory so the app can start and the
+    knowledge base can still function.
+    """
+    global _chroma_client
+    if _chroma_client is not None:
+        return _chroma_client
+
+    candidate_paths = [settings.CHROMA_PERSIST_DIR, os.path.join(tempfile.gettempdir(), "chroma_db")]
+    last_error = None
+
+    for path in candidate_paths:
+        try:
+            os.makedirs(path, exist_ok=True)
+            _chroma_client = chromadb.PersistentClient(path=path)
+            return _chroma_client
+        except Exception as exc:
+            last_error = exc
+
+    raise last_error
+
 def seed_knowledge_base():
     """Seed ChromaDB with Nigerian legal data if empty."""
+    client = _init_chroma_client()
     collections = [c.name for c in client.list_collections()]
     
     if "nigerian_clauses" not in collections:
@@ -61,6 +88,7 @@ def search_relevant_clauses(document_text: str, top_k: int = 5):
     # During tests, skip heavy embedding/model calls
     if getattr(settings, "OPENAI_API_KEY", "").startswith("sk-test"):
         return []
+    client = _init_chroma_client()
     collection = client.get_collection(name="nigerian_clauses", embedding_function=embedding_func)
     results = collection.query(
         query_texts=[document_text[:1000]], # Chroma limits
