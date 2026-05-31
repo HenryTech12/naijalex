@@ -23,8 +23,10 @@ class Settings(BaseSettings):
     TWILIO_WHATSAPP_NUMBER: str = ""
     
     # App Paths
-    CHROMA_PERSIST_DIR: str = "./chroma_db"
-    UPLOAD_DIR: str = "./uploads"
+    # Use writable locations by default so containerized deploys can start even
+    # when the app filesystem is read-only or `.env` is not present.
+    CHROMA_PERSIST_DIR: str = "/tmp/chroma_db"
+    UPLOAD_DIR: str = "/tmp/uploads"
     APP_BASE_URL: str = "http://localhost:8000"
     
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")

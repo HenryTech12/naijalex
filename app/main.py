@@ -7,6 +7,7 @@ from app import database
 from app.services.knowledge_base import seed_knowledge_base
 import time
 import logging
+import os
 
 # Setup Logging
 logging.basicConfig(level=logging.INFO)
@@ -44,6 +45,7 @@ app.include_router(risk_cards.router, prefix="/api/v1")
 app.include_router(whatsapp.router, prefix="/api/v1")
 
 # Static Files
+os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
 
 @app.on_event("startup")
