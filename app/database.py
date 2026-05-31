@@ -14,6 +14,9 @@ from app.config import settings
 # remove it from the URL so SQLAlchemy doesn't forward it as a keyword.
 def _prepare_db_url_and_connect_args(db_url: str):
     parsed = urlparse(db_url)
+    if parsed.scheme.startswith("sqlite"):
+        return db_url, {}
+
     qs = parse_qs(parsed.query)
     sslmode = None
     if "sslmode" in qs:

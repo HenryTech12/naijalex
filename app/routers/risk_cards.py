@@ -1,18 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.deps import get_db
 from app.models.document import DocumentAnalysis, Document
 from app.services.risk_card import generate_risk_card
 import uuid
-from datetime import datetime
 
 router = APIRouter(tags=["Risk Cards"])
 
 @router.get("/risk-card/{analysis_id}")
 async def get_risk_card(
     analysis_id: uuid.UUID,
+    redirect: bool = False,
+    refresh: bool = False,
     db: AsyncSession = Depends(get_db)
 ):
     # Get analysis
@@ -24,12 +25,16 @@ async def get_risk_card(
     if not analysis:
         raise HTTPException(status_code=404, detail="Analysis not found")
         
-    if analysis.risk_card_url and os.path.exists(analysis.risk_card_url):
-        return FileResponse(analysis.risk_card_url, media_type="application/pdf")
+    if analysis.risk_card_url and not refresh:
+        if redirect:
+            return RedirectResponse(url=analysis.risk_card_url)
+        return {"analysis_id": str(analysis.id), "risk_card_url": analysis.risk_card_url}
         
     # Get doc info for card
     doc_result = await db.execute(select(Document).where(Document.id == analysis.document_id))
     doc = doc_result.scalar_one_or_none()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
     
     card_data = {
         "document_type": doc.document_type or "Legal Document",
@@ -39,12 +44,17 @@ async def get_risk_card(
         "top_3_actions": analysis.top_3_actions
     }
     
-    pdf_path = generate_risk_card(str(analysis.id), card_data)
+    try:
+        pdf_url = generate_risk_card(str(analysis.id), card_data)
+    except RuntimeError as e:
+        raise HTTPException(status_code=502, detail=str(e)) from e
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=str(e)) from e
     
     # Save back to DB
-    analysis.risk_card_url = pdf_path
+    analysis.risk_card_url = pdf_url
     await db.commit()
-    
-    return FileResponse(pdf_path, media_type="application/pdf")
 
-import os
+    if redirect:
+        return RedirectResponse(url=pdf_url)
+    return {"analysis_id": str(analysis.id), "risk_card_url": pdf_url}

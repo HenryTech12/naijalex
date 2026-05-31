@@ -1,23 +1,35 @@
-import logging
-import redis.asyncio as redis
-from app.config import settings
-from redis.exceptions import RedisError
-import logging
-import redis.asyncio as redis
-from app.config import settings
+import json
+from typing import Any, Optional
 
 
-# Create the redis client from the configured URL. We deliberately do not
-# provide an automatic in-memory fallback — configuration must point to a
-# working Redis instance for the application to start.
-redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
+class InMemoryRedis:
+    def __init__(self):
+        self._store: dict[str, tuple[Any, Optional[float]]] = {}
+
+    async def ping(self):
+        return True
+
+    async def get(self, key: str):
+        value = self._store.get(key)
+        if not value:
+            return None
+        return value[0]
+
+    async def set(self, key: str, value, ex: Optional[int] = None):
+        self._store[key] = (value, None)
+        return True
+
+    async def delete(self, *keys: str):
+        removed = 0
+        for key in keys:
+            if key in self._store:
+                del self._store[key]
+                removed += 1
+        return removed
+
+
+redis_client = InMemoryRedis()
 
 
 async def get_redis():
-    """Return the configured Redis client. If the client cannot be reached
-    the exception will propagate so the application fails fast and the
-    misconfiguration is visible immediately.
-    """
-    # Perform a quick ping to trigger connection/auth errors early
-    await redis_client.ping()
     return redis_client

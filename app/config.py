@@ -21,6 +21,12 @@ class Settings(BaseSettings):
     TWILIO_ACCOUNT_SID: str = ""
     TWILIO_AUTH_TOKEN: str = ""
     TWILIO_WHATSAPP_NUMBER: str = ""
+
+    # Cloudinary
+    CLOUDINARY_CLOUD_NAME: str = ""
+    CLOUDINARY_API_KEY: str = ""
+    CLOUDINARY_API_SECRET: str = ""
+    CLOUDINARY_FOLDER: str = "naijalex/risk-cards"
     
     # App Paths
     # Use writable locations by default so containerized deploys can start even

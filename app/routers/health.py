@@ -30,7 +30,7 @@ async def health_check():
         except Exception:
             pass
 
-    # Check Redis using the configured client
+    # Check the local cache stub; no external Redis dependency in SQLite mode.
     try:
         await redis_client.ping()
     except Exception as e:
