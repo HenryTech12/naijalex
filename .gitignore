@@ -169,8 +169,6 @@ cython_debug/
 *.sqlite
 
 # Application specific
-uploads/
-chroma_db/
 postgres_data/
 redis_data/
 node_modules/
