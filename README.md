@@ -39,9 +39,15 @@ Create a `.env` file (see `.env.example`):
 
 ```env
 VITE_API_BASE_URL=http://localhost:8000
+VITE_WHATSAPP_SANDBOX_NUMBER=+14155238886
+VITE_WHATSAPP_SANDBOX_JOIN_CODE=join various-mill
+VITE_WHATSAPP_SANDBOX_QR_URL=https://example.com/whatsapp-sandbox-qr.png
+VITE_WHATSAPP_SANDBOX_DEEPLINK=
 ```
 
 For production, set this to your deployed backend URL.
+
+`VITE_WHATSAPP_SANDBOX_DEEPLINK` is optional. If omitted, the frontend builds a WhatsApp deeplink from the sandbox number and join code.
 
 ## Pages
 
@@ -64,6 +70,7 @@ Marketing landing page explaining NaijaLex features.
 
 ### `/explorer` - API Explorer Dashboard
 Interactive API testing interface with:
+- WhatsApp sandbox connect panel (copy number/code + open WhatsApp + QR support)
 - Endpoint list grouped by category
 - Path/query/body parameter editors
 - cURL preview with copy button

@@ -4,6 +4,7 @@ import { EndpointList } from '../components/explorer/EndpointList';
 import { EndpointForm } from '../components/explorer/EndpointForm';
 import { ResponseViewer } from '../components/explorer/ResponseViewer';
 import { FlowStatePanel } from '../components/explorer/FlowStatePanel';
+import { WhatsAppSandboxCard } from '../components/explorer/WhatsAppSandboxCard';
 import { useApp } from '../contexts/AppContext';
 import { ENDPOINTS } from '../types/endpoints';
 import { API_BASE } from '../api/client';
@@ -86,8 +87,12 @@ export const Explorer: React.FC = () => {
         </div>
       </header>
 
+      <div className="px-4 sm:px-6 lg:px-8 pt-4">
+        <WhatsAppSandboxCard />
+      </div>
+
       {/* Main grid */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden pt-4">
         {/* Sidebar - Endpoint list */}
         <div className="w-64 shrink-0 hidden lg:block">
           <EndpointList
