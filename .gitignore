@@ -172,3 +172,5 @@ cython_debug/
 postgres_data/
 redis_data/
 node_modules/
+uploads/
+risk_cards/
