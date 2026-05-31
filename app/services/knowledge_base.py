@@ -1,105 +1,74 @@
-import chromadb
-from chromadb.utils import embedding_functions
 import json
 import os
-import tempfile
+import re
+from functools import lru_cache
+from pathlib import Path
+
 from app.config import settings
 
-embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(
-    model_name="paraphrase-multilingual-mpnet-base-v2"
-)
-
-_chroma_client = None
+_SEED_DIR = Path(__file__).resolve().parents[2] / "knowledge_base" / "seed_data"
 
 
-def _init_chroma_client():
-    """Create a Chroma client lazily.
+@lru_cache(maxsize=1)
+def _load_seed_file(filename: str) -> list[dict]:
+    path = _SEED_DIR / filename
+    if not path.exists():
+        return []
+    with path.open("r", encoding="utf-8") as handle:
+        data = json.load(handle)
+    return data if isinstance(data, list) else []
 
-    Some deploy targets mount the application filesystem read-only. In that
-    case, fall back to a writable temp directory so the app can start and the
-    knowledge base can still function.
-    """
-    global _chroma_client
-    if _chroma_client is not None:
-        return _chroma_client
 
-    candidate_paths = [settings.CHROMA_PERSIST_DIR, os.path.join(tempfile.gettempdir(), "chroma_db")]
-    last_error = None
+def _tokenize(text: str) -> set[str]:
+    return set(re.findall(r"[a-zA-Z0-9_']+", text.lower()))
 
-    for path in candidate_paths:
-        try:
-            os.makedirs(path, exist_ok=True)
-            _chroma_client = chromadb.PersistentClient(path=path)
-            return _chroma_client
-        except Exception as exc:
-            last_error = exc
-
-    raise last_error
 
 def seed_knowledge_base():
-    """Seed ChromaDB with Nigerian legal data if empty."""
-    client = _init_chroma_client()
-    collections = [c.name for c in client.list_collections()]
-    
-    if "nigerian_clauses" not in collections:
-        clause_col = client.create_collection(
-            name="nigerian_clauses", 
-            embedding_function=embedding_func
-        )
-        seed_path = "knowledge_base/seed_data/nigerian_clauses.json"
-        if os.path.exists(seed_path):
-            with open(seed_path, "r") as f:
-                clauses = json.load(f)
-                ids = [f"clause_{i}" for i in range(len(clauses))]
-                documents = [c["common_wording"] for c in clauses]
-                metadatas = [
-                    {
-                        "type": c["clause_type"],
-                        "plain_english": c["plain_english"],
-                        "risk_level": c["risk_level"],
-                        "legal_ref": c["legal_reference"],
-                        "action": c["recommended_action"]
-                    } for c in clauses
-                ]
-                clause_col.add(ids=ids, documents=documents, metadatas=metadatas)
+    """Keep the knowledge base seed files available.
 
-    if "nigerian_laws" not in collections:
-        law_col = client.create_collection(
-            name="nigerian_laws", 
-            embedding_function=embedding_func
-        )
-        seed_path = "knowledge_base/seed_data/nigerian_laws.json"
-        if os.path.exists(seed_path):
-            with open(seed_path, "r") as f:
-                laws = json.load(f)
-                ids = [f"law_{i}" for i in range(len(laws))]
-                documents = [l["summary"] for l in laws]
-                metadatas = [
-                    {
-                        "name": l["law_name"],
-                        "jurisdiction": l["jurisdiction"],
-                        "provisions": ", ".join(l["key_provisions"])
-                    } for l in laws
-                ]
-                law_col.add(ids=ids, documents=documents, metadatas=metadatas)
+    The app now reads directly from the JSON seed files at query time, so no
+    startup-time vector database initialization is required.
+    """
+    os.makedirs(_SEED_DIR, exist_ok=True)
+    return None
+
+
+def _score_candidate(document_tokens: set[str], candidate_text: str) -> int:
+    candidate_tokens = _tokenize(candidate_text)
+    return len(document_tokens & candidate_tokens)
+
 
 def search_relevant_clauses(document_text: str, top_k: int = 5):
-    """Search for similar clauses in the knowledge base."""
-    # During tests, skip heavy embedding/model calls
-    if getattr(settings, "OPENAI_API_KEY", "").startswith("sk-test"):
+    """Return the most relevant clauses using simple token overlap.
+
+    This keeps startup lightweight and avoids external ML/vector database
+    dependencies during deployment.
+    """
+    clauses = _load_seed_file("nigerian_clauses.json")
+    if not clauses:
         return []
-    client = _init_chroma_client()
-    collection = client.get_collection(name="nigerian_clauses", embedding_function=embedding_func)
-    results = collection.query(
-        query_texts=[document_text[:1000]], # Chroma limits
-        n_results=top_k
-    )
-    
-    formatted = []
-    if results["documents"]:
-        for i in range(len(results["documents"][0])):
-            formatted.append({
-                "text": results["documents"][0][i],
-                "metadata": results["metadatas"][0][i]
-            })
-    return formatted
+
+    document_tokens = _tokenize(document_text)
+    scored = []
+    for clause in clauses:
+        text = clause.get("common_wording", "")
+        score = _score_candidate(document_tokens, text)
+        if score > 0:
+            scored.append((score, clause))
+
+    scored.sort(key=lambda item: item[0], reverse=True)
+    results = []
+    for _, clause in scored[:top_k]:
+        results.append(
+            {
+                "text": clause.get("common_wording", ""),
+                "metadata": {
+                    "type": clause.get("clause_type"),
+                    "plain_english": clause.get("plain_english"),
+                    "risk_level": clause.get("risk_level"),
+                    "legal_ref": clause.get("legal_reference"),
+                    "action": clause.get("recommended_action"),
+                },
+            }
+        )
+    return results
