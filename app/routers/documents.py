@@ -8,7 +8,6 @@ from app.schemas.analysis import DocumentAnalysisResponse
 from app.services.document_ingestion import ingest_document
 from app.agents.pipeline import run_pipeline
 from app.config import settings
-from pydantic import BaseModel as PydanticBaseModel
 import uuid
 import os
 import json
@@ -20,12 +19,25 @@ chat_router = APIRouter(tags=["Documents"])
 class ChatRequest(PydanticBaseModel):
     question: str
     language_mode: str = "english"
-chat_router = APIRouter(tags=["Documents"])
 
 
-class ChatRequest(PydanticBaseModel):
-    question: str
-    language_mode: str = "english"
+class AnalysisHistoryItem(PydanticBaseModel):
+    analysis_id: uuid.UUID
+    document_id: uuid.UUID
+    filename: str
+    created_at: str
+    language_mode: str
+    overall_risk: str
+    summary: str
+    document_type: str | None = None
+    risk_card_url: str | None = None
+    processing_time_ms: int
+
+
+class AnalysisHistoryResponse(PydanticBaseModel):
+    user_id: uuid.UUID
+    count: int
+    items: list[AnalysisHistoryItem]
 
 async def start_analysis_task(doc_id: str, user_id: str, raw_text: str, language_mode: str):
     try:
@@ -125,6 +137,50 @@ async def get_analysis(
     return resp
 
 
+@router.get("/history/{user_id}")
+async def get_analysis_history(
+    user_id: str,
+    limit: int = 20,
+    offset: int = 0,
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        user_uuid = uuid.UUID(user_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid user ID")
+
+    limit = max(1, min(limit, 100))
+    offset = max(0, offset)
+
+    result = await db.execute(
+        select(DocumentAnalysis, Document)
+        .join(Document, DocumentAnalysis.document_id == Document.id)
+        .where(Document.user_id == user_uuid)
+        .order_by(DocumentAnalysis.created_at.desc())
+        .offset(offset)
+        .limit(limit)
+    )
+
+    items = []
+    for analysis, document in result.all():
+        items.append(
+            AnalysisHistoryItem(
+                analysis_id=analysis.id,
+                document_id=analysis.document_id,
+                filename=document.filename,
+                created_at=analysis.created_at.isoformat(),
+                language_mode=analysis.language_mode,
+                overall_risk=analysis.overall_risk,
+                summary=analysis.summary,
+                document_type=document.document_type,
+                risk_card_url=analysis.risk_card_url,
+                processing_time_ms=analysis.processing_time_ms,
+            )
+        )
+
+    return AnalysisHistoryResponse(user_id=user_uuid, count=len(items), items=items)
+
+
 @chat_router.post("/chat/{analysis_id}")
 async def chat_about_document(
     analysis_id: str,
@@ -133,62 +189,6 @@ async def chat_about_document(
 ):
     import uuid
     import json
-    from sqlalchemy import select
-    from app.models.document import DocumentAnalysis
-    from openai import AsyncOpenAI
-    from app.config import settings
-
-    try:
-        result = await db.execute(
-            select(DocumentAnalysis).where(
-                DocumentAnalysis.id == uuid.UUID(analysis_id)
-            )
-        )
-        analysis = result.scalar_one_or_none()
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid analysis ID")
-
-    if not analysis:
-        raise HTTPException(status_code=404, detail="Analysis not found")
-
-    language_instruction = (
-        "Respond in natural Lagos Pidgin English. Sound like a friendly Nigerian legal advisor, not a translator."
-        if request.language_mode == "pidgin"
-        else "Respond in plain simple English. Be warm and helpful."
-    )
-
-    clauses_preview = analysis.clauses[:5] if isinstance(analysis.clauses, list) else []
-
-    prompt = f"""You are NaijaLex, a Nigerian legal assistant helping an SME owner understand their contract.
-
-Contract analysis:
-- Overall Risk: {analysis.overall_risk}
-- Summary: {analysis.summary}
-- Top Actions: {json.dumps(analysis.top_3_actions)}
-- Key Clauses: {json.dumps(clauses_preview)}
-
-The user asks: "{request.question}"
-
-{language_instruction}
-Be specific to their contract. Keep response under 150 words.
-End with "Any other question? I dey here! 💬" if pidgin, or "Any other questions? I'm here to help! 💬" if english."""
-
-    client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
-    response = await client.chat.completions.create(
-        model="gpt-4o",
-        max_tokens=500,
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return {"answer": response.choices[0].message.content}
-
-
-@chat_router.post("/chat/{analysis_id}")
-async def chat_about_document(
-    analysis_id: str,
-    request: ChatRequest,
-    db: AsyncSession = Depends(get_db),
-):
-    import uuid, json
     from sqlalchemy import select
     from app.models.document import DocumentAnalysis
     from openai import AsyncOpenAI
