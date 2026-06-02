@@ -41,6 +41,7 @@ async def log_requests(request: Request, call_next):
 app.include_router(health.router, prefix="/api/v1")
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(documents.router, prefix="/api/v1")
+app.include_router(documents.chat_router, prefix="/api/v1")
 app.include_router(risk_cards.router, prefix="/api/v1")
 app.include_router(whatsapp.router, prefix="/api/v1")
 

@@ -1,17 +1,31 @@
 from fastapi import APIRouter, Depends, UploadFile, File, Form, BackgroundTasks, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from pydantic import BaseModel as PydanticBaseModel
 from app.deps import get_db, get_redis
 from app.models.document import Document, DocumentAnalysis
 from app.schemas.analysis import DocumentAnalysisResponse
 from app.services.document_ingestion import ingest_document
 from app.agents.pipeline import run_pipeline
 from app.config import settings
+from pydantic import BaseModel as PydanticBaseModel
 import uuid
 import os
 import json
 
 router = APIRouter(prefix="/documents", tags=["Documents"])
+chat_router = APIRouter(tags=["Documents"])
+
+
+class ChatRequest(PydanticBaseModel):
+    question: str
+    language_mode: str = "english"
+chat_router = APIRouter(tags=["Documents"])
+
+
+class ChatRequest(PydanticBaseModel):
+    question: str
+    language_mode: str = "english"
 
 async def start_analysis_task(doc_id: str, user_id: str, raw_text: str, language_mode: str):
     try:
@@ -109,3 +123,116 @@ async def get_analysis(
     await redis.set(cache_key, json.dumps(resp), ex=3600)
     
     return resp
+
+
+@chat_router.post("/chat/{analysis_id}")
+async def chat_about_document(
+    analysis_id: str,
+    request: ChatRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    import uuid
+    import json
+    from sqlalchemy import select
+    from app.models.document import DocumentAnalysis
+    from openai import AsyncOpenAI
+    from app.config import settings
+
+    try:
+        result = await db.execute(
+            select(DocumentAnalysis).where(
+                DocumentAnalysis.id == uuid.UUID(analysis_id)
+            )
+        )
+        analysis = result.scalar_one_or_none()
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid analysis ID")
+
+    if not analysis:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+
+    language_instruction = (
+        "Respond in natural Lagos Pidgin English. Sound like a friendly Nigerian legal advisor, not a translator."
+        if request.language_mode == "pidgin"
+        else "Respond in plain simple English. Be warm and helpful."
+    )
+
+    clauses_preview = analysis.clauses[:5] if isinstance(analysis.clauses, list) else []
+
+    prompt = f"""You are NaijaLex, a Nigerian legal assistant helping an SME owner understand their contract.
+
+Contract analysis:
+- Overall Risk: {analysis.overall_risk}
+- Summary: {analysis.summary}
+- Top Actions: {json.dumps(analysis.top_3_actions)}
+- Key Clauses: {json.dumps(clauses_preview)}
+
+The user asks: "{request.question}"
+
+{language_instruction}
+Be specific to their contract. Keep response under 150 words.
+End with "Any other question? I dey here! 💬" if pidgin, or "Any other questions? I'm here to help! 💬" if english."""
+
+    client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+    response = await client.chat.completions.create(
+        model="gpt-4o",
+        max_tokens=500,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return {"answer": response.choices[0].message.content}
+
+
+@chat_router.post("/chat/{analysis_id}")
+async def chat_about_document(
+    analysis_id: str,
+    request: ChatRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    import uuid, json
+    from sqlalchemy import select
+    from app.models.document import DocumentAnalysis
+    from openai import AsyncOpenAI
+    from app.config import settings
+
+    try:
+        result = await db.execute(
+            select(DocumentAnalysis).where(
+                DocumentAnalysis.id == uuid.UUID(analysis_id)
+            )
+        )
+        analysis = result.scalar_one_or_none()
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid analysis ID")
+
+    if not analysis:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+
+    language_instruction = (
+        "Respond in natural Lagos Pidgin English. Sound like a friendly Nigerian legal advisor, not a translator."
+        if request.language_mode == "pidgin"
+        else "Respond in plain simple English. Be warm and helpful."
+    )
+
+    clauses_preview = analysis.clauses[:5] if isinstance(analysis.clauses, list) else []
+
+    prompt = f"""You are NaijaLex, a Nigerian legal assistant helping an SME owner understand their contract.
+
+Contract analysis:
+- Overall Risk: {analysis.overall_risk}
+- Summary: {analysis.summary}
+- Top Actions: {json.dumps(analysis.top_3_actions)}
+- Key Clauses: {json.dumps(clauses_preview)}
+
+The user asks: "{request.question}"
+
+{language_instruction}
+Be specific to their contract. Keep response under 150 words.
+End with "Any other question? I dey here! 💬" if pidgin, or "Any other questions? I'm here to help! 💬" if english."""
+
+    client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+    response = await client.chat.completions.create(
+        model="gpt-4o",
+        max_tokens=500,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return {"answer": response.choices[0].message.content}
