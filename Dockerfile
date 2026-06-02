@@ -20,7 +20,7 @@ COPY . .
 # Create runtime directories and a non-root user, then set ownership
 RUN mkdir -p /app/uploads/risk_cards /app/chroma_db \
     && groupadd -r app && useradd -r -g app -d /home/app -s /sbin/nologin app \
-    && chown -R app:app /app/uploads /app/chroma_db
+    && chown -R app:app /app
 
 EXPOSE 8000
 
