@@ -8,6 +8,20 @@ os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///./test.db"
 os.environ["REDIS_URL"] = "redis://localhost:6379/1"
 os.environ["LANGCHAIN_API_KEY"] = "test"
 
+import sys
+import types
+
+# Stub heavy external libs to avoid import errors during tests
+for mod in ("pdfplumber", "docx", "pytesseract", "pdf2image", "PIL", "pdf2image.pdfinfo", "PIL.Image"):
+    if mod not in sys.modules:
+        sys.modules[mod] = types.ModuleType(mod)
+
+# Provide commonly-used attributes to the stubbed modules
+sys.modules["pdf2image"].convert_from_path = lambda *args, **kwargs: []
+sys.modules["docx"].Document = lambda *args, **kwargs: types.SimpleNamespace(paragraphs=[], tables=[])
+sys.modules["pytesseract"].image_to_string = lambda *args, **kwargs: ""
+sys.modules["PIL"].Image = types.SimpleNamespace()
+
 from httpx import AsyncClient
 from app.main import app
 from app.database import Base, engine, async_session
