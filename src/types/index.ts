@@ -65,6 +65,7 @@ export interface AnalysisResult {
   id: string;
   document_id: string;
   user_id?: string;
+  filename?: string;
   created_at: string;
   language_mode: LanguageMode;
   clauses: ClauseAnalysis[];
@@ -74,6 +75,31 @@ export interface AnalysisResult {
   risk_card_url: string | null;
   processing_time_ms: number;
   status: 'processing' | 'complete' | 'failed';
+}
+
+export interface DocumentHistoryItem {
+  analysis_id: string;
+  user_id: string;
+  filename: string;
+  created_at: string;
+  overall_risk: RiskLevel;
+  summary: string;
+  language_mode: LanguageMode;
+  processing_time_ms: number;
+  status: 'processing' | 'complete' | 'failed';
+}
+
+export interface DocumentHistoryResponse {
+  items: DocumentHistoryItem[];
+}
+
+export interface ChatRequest {
+  question: string;
+  language_mode: LanguageMode;
+}
+
+export interface ChatResponse {
+  answer: string;
 }
 
 // Risk Card
@@ -103,6 +129,8 @@ export interface EndpointConfig {
   path: string;
   name: string;
   description: string;
+  requestType?: string;
+  responseType?: string;
   hasBody: boolean;
   hasFormData: boolean;
   pathParams: string[];

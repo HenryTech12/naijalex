@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { Download, RefreshCw, FileText, Loader2, AlertCircle, ExternalLink, Copy, Check, Eye } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Download, RefreshCw, FileText, Loader2, AlertCircle, ExternalLink, Copy, Check, Eye, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
@@ -18,10 +18,11 @@ import { getRiskCard, getRiskCardUrl, API_BASE } from '../api/client';
 import type { RiskCardResponse } from '../types';
 
 export const Analysis: React.FC = () => {
-  const { analysisId } = useParams<{ analysisId: string }>();
+  const { analysisId, userId } = useParams<{ analysisId: string; userId?: string }>();
   const { addAnalysis, setAnalysisId, setRiskCardUrl } = useApp();
   const navigate = useNavigate();
-  const { analysis, isLoading, isComplete, error } = useAnalysis(analysisId ?? null);
+  const chatSectionRef = useRef<HTMLDivElement | null>(null);
+  const { analysis, isLoading, isComplete, error } = useAnalysis(analysisId ?? null, userId ?? null);
 
   // Risk card state
   const [riskCardData, setRiskCardData] = useState<RiskCardResponse | null>(null);
@@ -93,6 +94,10 @@ export const Analysis: React.FC = () => {
     if (riskCardData?.risk_card_url) {
       window.open(riskCardData.risk_card_url, '_blank');
     }
+  };
+
+  const jumpToChat = () => {
+    chatSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   if (error) {
@@ -206,6 +211,14 @@ export const Analysis: React.FC = () => {
                 <span className="hidden sm:inline">Analyze Another</span>
                 <span className="sm:hidden">New</span>
               </Link>
+              <button
+                onClick={jumpToChat}
+                className="flex items-center gap-1.5 text-xs font-medium text-brand-textPrimary border border-brand-border bg-white hover:bg-brand-bg px-3 py-2 rounded-lg transition-colors"
+              >
+                <MessageCircle className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Ask about this</span>
+                <span className="sm:hidden">Chat</span>
+              </button>
             </div>
           </div>
         </div>
@@ -399,10 +412,12 @@ export const Analysis: React.FC = () => {
               )}
 
               {analysis && isComplete && (
-                <DocumentChat
-                  analysisId={analysis.id}
-                  languageMode={analysis.language_mode}
-                />
+                <div ref={chatSectionRef} id="analysis-chat">
+                  <DocumentChat
+                    analysisId={analysis.id}
+                    languageMode={analysis.language_mode}
+                  />
+                </div>
               )}
             </div>
           </div>

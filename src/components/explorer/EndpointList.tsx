@@ -65,6 +65,18 @@ export const EndpointList: React.FC<EndpointListProps> = ({ selectedId, onSelect
                     <p className="text-xs text-brand-textSecondary mt-0.5 truncate pl-10">
                       {endpoint.path}
                     </p>
+                    <div className="mt-1 pl-10 flex flex-wrap gap-1.5">
+                      {endpoint.requestType && (
+                        <span className="rounded-full bg-brand-bg px-2 py-0.5 text-[10px] text-brand-textSecondary border border-brand-border">
+                          Req {endpoint.requestType}
+                        </span>
+                      )}
+                      {endpoint.responseType && (
+                        <span className="rounded-full bg-brand-bg px-2 py-0.5 text-[10px] text-brand-textSecondary border border-brand-border">
+                          Res {endpoint.responseType}
+                        </span>
+                      )}
+                    </div>
                   </button>
                 ))}
               </div>

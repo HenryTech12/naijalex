@@ -1,4 +1,5 @@
-import api from './client';
+import { sendChatQuestion } from './client';
+import type { ChatResponse, LanguageMode } from '../types';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -6,23 +7,10 @@ export interface ChatMessage {
   timestamp: Date;
 }
 
-export interface ChatRequest {
-  question: string;
-  language_mode: string;
-}
-
-export interface ChatResponse {
-  answer: string;
-}
-
 export const askQuestion = async (
   analysisId: string,
   question: string,
-  languageMode: string
+  languageMode: LanguageMode
 ): Promise<ChatResponse> => {
-  const response = await api.post<ChatResponse>(`/api/v1/chat/${analysisId}`,
-    { question, language_mode: languageMode },
-    { timeout: 30000 }
-  );
-  return response.data;
+  return sendChatQuestion(analysisId, question, languageMode);
 };

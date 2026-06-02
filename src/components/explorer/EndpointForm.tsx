@@ -4,7 +4,21 @@ import toast from 'react-hot-toast';
 import { clsx } from 'clsx';
 import type { EndpointConfig } from '../../types';
 import { useApp } from '../../contexts/AppContext';
-import { API_BASE, getHealth, createUser, getUserProfile, analyzeDocument, getAnalysis, getRiskCard, sendWhatsAppWebhook, getErrorMessage, getRiskCardUrl } from '../../api/client';
+import {
+  API_BASE,
+  getHealth,
+  createUser,
+  getUserProfile,
+  analyzeDocument,
+  getAnalysis,
+  getRiskCard,
+  sendWhatsAppWebhook,
+  getErrorMessage,
+  getRiskCardUrl,
+  getAnalysisHistory,
+  getSavedAnalysis,
+  sendChatQuestion,
+} from '../../api/client';
 import type { WhatsAppWebhookPayload } from '../../types';
 
 interface EndpointFormProps {
@@ -146,6 +160,37 @@ export const EndpointForm: React.FC<EndpointFormProps> = ({ endpoint, onResponse
           break;
         }
 
+        case 'documents-history-list': {
+          const historyRes = await getAnalysisHistory(pathParams.user_id || userId || '');
+          result = { status: 200, headers: {}, data: historyRes };
+          break;
+        }
+
+        case 'documents-history-detail': {
+          const savedAnalysis = await getSavedAnalysis(
+            pathParams.user_id || userId || '',
+            pathParams.analysis_id || analysisId || analysisRequestId || ''
+          );
+          setAnalysisId(savedAnalysis.id);
+          if (savedAnalysis.risk_card_url) {
+            setRiskCardUrl(savedAnalysis.risk_card_url);
+          }
+          result = { status: 200, headers: {}, data: savedAnalysis };
+          break;
+        }
+
+        case 'documents-chat': {
+          const targetAnalysisId = pathParams.analysis_id || analysisId || analysisRequestId || '';
+          const payload = jsonBody ? JSON.parse(jsonBody) : { question: '', language_mode: 'english' };
+          const chatRes = await sendChatQuestion(
+            targetAnalysisId,
+            payload.question || 'What should I change in this clause?',
+            payload.language_mode || 'english'
+          );
+          result = { status: 200, headers: {}, data: chatRes };
+          break;
+        }
+
         case 'documents-analysis': {
           const analysisRes = await getAnalysis(pathParams.analysis_id || analysisRequestId || '');
           setAnalysisId(analysisRes.id);
@@ -238,6 +283,18 @@ export const EndpointForm: React.FC<EndpointFormProps> = ({ endpoint, onResponse
           </div>
         </div>
         <p className="text-xs text-brand-textSecondary mt-2">{endpoint.description}</p>
+        <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-brand-textSecondary">
+          {endpoint.requestType && (
+            <span className="rounded-full border border-brand-border bg-white px-2 py-0.5">
+              Request: {endpoint.requestType}
+            </span>
+          )}
+          {endpoint.responseType && (
+            <span className="rounded-full border border-brand-border bg-white px-2 py-0.5">
+              Response: {endpoint.responseType}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Form */}
@@ -292,9 +349,25 @@ export const EndpointForm: React.FC<EndpointFormProps> = ({ endpoint, onResponse
         {/* JSON body */}
         {endpoint.hasBody && (
           <div>
-            <label className="block text-xs font-semibold text-brand-textSecondary uppercase tracking-wide mb-2">
-              Request Body (JSON)
-            </label>
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <label className="block text-xs font-semibold text-brand-textSecondary uppercase tracking-wide">
+                Request Body (JSON)
+              </label>
+              <button
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(jsonBody);
+                    toast.success('Request copied!');
+                  } catch {
+                    toast.error('Failed to copy request.');
+                  }
+                }}
+                className="flex items-center gap-1 text-xs text-primary hover:underline"
+              >
+                <Copy className="w-3 h-3" />
+                Copy
+              </button>
+            </div>
             <textarea
               value={jsonBody}
               onChange={(e) => setJsonBody(e.target.value)}

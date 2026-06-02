@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { getAnalysis } from '../api/client';
+import { getAnalysis, getSavedAnalysis } from '../api/client';
 import type { AnalysisResult } from '../types';
 
 interface UseAnalysisResult {
@@ -12,7 +12,7 @@ interface UseAnalysisResult {
   isPolling: boolean;
 }
 
-export const useAnalysis = (analysisId: string | null): UseAnalysisResult => {
+export const useAnalysis = (analysisId: string | null, userId?: string | null): UseAnalysisResult => {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
@@ -33,7 +33,7 @@ export const useAnalysis = (analysisId: string | null): UseAnalysisResult => {
     if (!analysisId) return;
 
     try {
-      const result = await getAnalysis(analysisId);
+      const result = userId ? await getSavedAnalysis(userId, analysisId) : await getAnalysis(analysisId);
       setAnalysis(result);
 
       if (result.status === 'complete' || result.status === 'failed') {
@@ -54,7 +54,7 @@ export const useAnalysis = (analysisId: string | null): UseAnalysisResult => {
       setIsLoading(false);
       stopPolling();
     }
-  }, [analysisId, stopPolling]);
+  }, [analysisId, stopPolling, userId]);
 
   const startPolling = useCallback(() => {
     if (!analysisId) return;
@@ -67,7 +67,7 @@ export const useAnalysis = (analysisId: string | null): UseAnalysisResult => {
 
     poll();
     intervalRef.current = setInterval(poll, 3000);
-  }, [poll]);
+  }, [poll, analysisId]);
 
   useEffect(() => {
     return () => {

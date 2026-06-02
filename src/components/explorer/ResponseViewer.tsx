@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, Check, X, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Copy, Check, AlertCircle, CheckCircle2, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { clsx } from 'clsx';
 
@@ -10,6 +10,7 @@ interface ResponseViewerProps {
 
 export const ResponseViewer: React.FC<ResponseViewerProps> = ({ response, error }) => {
   const [copied, setCopied] = useState(false);
+  const [copiedError, setCopiedError] = useState(false);
 
   const copyResponse = async () => {
     if (!response?.data) return;
@@ -23,10 +24,25 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({ response, error 
     }
   };
 
+  const copyError = async () => {
+    if (!error) return;
+    try {
+      await navigator.clipboard.writeText(error);
+      setCopiedError(true);
+      toast.success('Error copied!');
+      setTimeout(() => setCopiedError(false), 2000);
+    } catch {
+      toast.error('Failed to copy.');
+    }
+  };
+
   if (!response && !error) {
     return (
-      <div className="flex items-center justify-center h-full bg-brand-bg text-brand-textSecondary text-sm">
-        <div className="text-center">
+      <div className="flex items-center justify-center h-full bg-brand-bg text-brand-textSecondary text-sm px-4">
+        <div className="text-center max-w-xs">
+          <div className="w-12 h-12 rounded-2xl bg-white border border-brand-border flex items-center justify-center mx-auto mb-3 shadow-sm">
+            <FileText className="w-5 h-5 text-primary" />
+          </div>
           <p className="font-medium">No response yet</p>
           <p className="text-xs mt-1">Execute a request to see the response</p>
         </div>
@@ -40,9 +56,17 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({ response, error 
         <div className="p-3 border-b border-red-200 bg-red-50 flex items-center gap-2">
           <AlertCircle className="w-4 h-4 text-danger" />
           <span className="text-sm font-medium text-danger">Error</span>
+          <div className="flex-1" />
+          <button
+            onClick={copyError}
+            className="flex items-center gap-1 text-xs text-danger hover:underline"
+          >
+            {copiedError ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+            {copiedError ? 'Copied' : 'Copy'}
+          </button>
         </div>
         <div className="flex-1 overflow-auto p-4">
-          <pre className="text-sm font-mono text-danger whitespace-pre-wrap bg-red-50 border border-red-100 rounded-lg p-3">
+          <pre className="text-sm font-mono text-danger whitespace-pre-wrap bg-red-50 border border-red-100 rounded-lg p-3 leading-relaxed">
             {error}
           </pre>
         </div>
@@ -82,6 +106,19 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({ response, error 
           {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
           {copied ? 'Copied' : 'Copy'}
         </button>
+      </div>
+
+      <div className="px-4 py-2 border-b border-brand-border bg-white text-xs text-brand-textSecondary flex flex-wrap items-center gap-3">
+        <span className="font-medium text-brand-textPrimary">Headers</span>
+        {Object.keys(response!.headers).length > 0 ? (
+          Object.entries(response!.headers).slice(0, 4).map(([key, value]) => (
+            <span key={key} className="rounded-full bg-brand-bg border border-brand-border px-2 py-0.5 font-mono">
+              {key}: {value}
+            </span>
+          ))
+        ) : (
+          <span>Not available for mock responses</span>
+        )}
       </div>
 
       {/* Response body */}

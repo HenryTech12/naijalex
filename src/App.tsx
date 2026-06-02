@@ -5,6 +5,7 @@ import { Landing } from './pages/Landing';
 import { Analyze } from './pages/Analyze';
 import { Analysis } from './pages/Analysis';
 import { Explorer } from './pages/Explorer';
+import { History } from './pages/History';
 
 function App() {
   return (
@@ -12,8 +13,11 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/dashboard" element={<Landing />} />
           <Route path="/analyze" element={<Analyze />} />
           <Route path="/analysis/:analysisId" element={<Analysis />} />
+          <Route path="/history/:userId" element={<History />} />
+          <Route path="/history/:userId/:analysisId" element={<Analysis />} />
           <Route path="/explorer" element={<Explorer />} />
         </Routes>
       </BrowserRouter>

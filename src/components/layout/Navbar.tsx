@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Scale, FileText, Terminal } from 'lucide-react';
+import { Scale, FileText, Terminal, History } from 'lucide-react';
+import { useApp } from '../../contexts/AppContext';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
+  const { userId } = useApp();
   const isLanding = location.pathname === '/';
   const isExplorer = location.pathname === '/explorer';
 
@@ -61,6 +63,19 @@ export const Navbar: React.FC = () => {
               <Terminal className="w-3.5 h-3.5" />
               API Explorer
             </Link>
+            {userId && (
+              <Link
+                to={`/history/${userId}`}
+                className={`text-sm font-medium transition-colors flex items-center gap-1 ${
+                  isLanding
+                    ? 'text-white/80 hover:text-white'
+                    : 'text-brand-textSecondary hover:text-brand-textPrimary'
+                }`}
+              >
+                <History className="w-3.5 h-3.5" />
+                History
+              </Link>
+            )}
           </nav>
 
           <div className="flex items-center gap-2">
