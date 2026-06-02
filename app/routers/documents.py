@@ -181,6 +181,66 @@ async def get_analysis_history(
     return AnalysisHistoryResponse(user_id=user_uuid, count=len(items), items=items)
 
 
+@router.get("/history/{user_id}/{analysis_id}")
+async def get_history_analysis_detail(
+    user_id: str,
+    analysis_id: str,
+    db: AsyncSession = Depends(get_db),
+    redis = Depends(get_redis),
+):
+    try:
+        user_uuid = uuid.UUID(user_id)
+        analysis_uuid = uuid.UUID(analysis_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid user ID or analysis ID")
+
+    cache_key = f"analysis:{analysis_uuid}"
+    cached = await redis.get(cache_key)
+    if cached:
+        cached_data = json.loads(cached)
+        doc_result = await db.execute(
+            select(Document).where(
+                Document.id == uuid.UUID(cached_data["document_id"]),
+                Document.user_id == user_uuid,
+            )
+        )
+        if doc_result.scalar_one_or_none() is None:
+            raise HTTPException(status_code=404, detail="Analysis not found")
+        return cached_data
+
+    result = await db.execute(
+        select(DocumentAnalysis, Document)
+        .join(Document, DocumentAnalysis.document_id == Document.id)
+        .where(
+            DocumentAnalysis.id == analysis_uuid,
+            Document.user_id == user_uuid,
+        )
+    )
+    row = result.first()
+
+    if not row:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+
+    analysis, document = row
+    resp = {
+        "id": str(analysis.id),
+        "document_id": str(analysis.document_id),
+        "created_at": analysis.created_at.isoformat(),
+        "language_mode": analysis.language_mode,
+        "clauses": analysis.clauses,
+        "overall_risk": analysis.overall_risk,
+        "summary": analysis.summary,
+        "top_3_actions": analysis.top_3_actions,
+        "risk_card_url": analysis.risk_card_url,
+        "processing_time_ms": analysis.processing_time_ms,
+        "status": "complete",
+        "filename": document.filename,
+    }
+
+    await redis.set(cache_key, json.dumps(resp), ex=3600)
+    return resp
+
+
 @chat_router.post("/chat/{analysis_id}")
 async def chat_about_document(
     analysis_id: str,
