@@ -253,7 +253,7 @@ export const Analysis: React.FC = () => {
                       <div className="flex items-center gap-2 text-xs text-brand-textSecondary">
                         <span className="font-medium">Analysis ID:</span>
                         <code className="bg-brand-bg px-2 py-0.5 rounded font-mono">
-                          {riskCardData.analysis_id.slice(0, 8)}...
+                          {(riskCardData.analysis_id ?? '').slice(0, 8)}...
                         </code>
                       </div>
 
