@@ -2,8 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { Download, RefreshCw, FileText, Loader2, AlertCircle, ExternalLink, Copy, Check, Eye, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Navbar } from '../components/layout/Navbar';
-import { Footer } from '../components/layout/Footer';
+import { PageLayout } from '../components/shared/PageLayout';
 import { RiskBadge } from '../components/analysis/RiskBadge';
 import { RiskSummaryCard } from '../components/analysis/RiskSummaryCard';
 import { ClauseList } from '../components/analysis/ClauseList';
@@ -13,6 +12,7 @@ import { ProcessingState } from '../components/analysis/ProcessingState';
 import { TextToSpeech } from '../components/analysis/TextToSpeech';
 import { DocumentChat } from '../components/analysis/DocumentChat';
 import { useAnalysis } from '../hooks/useAnalysis';
+import { useClipboard } from '../hooks/useClipboard';
 import { useApp } from '../contexts/AppContext';
 import { getRiskCard, getRiskCardUrl } from '../api/client';
 import type { RiskCardResponse } from '../types';
@@ -26,10 +26,10 @@ export const Analysis: React.FC = () => {
   // Risk card state
   const [riskCardData, setRiskCardData] = useState<RiskCardResponse | null>(null);
   const [isLoadingRiskCard, setIsLoadingRiskCard] = useState(false);
-  const [copiedUrl, setCopiedUrl] = useState(false);
   const [showPdfViewer, setShowPdfViewer] = useState(false);
   const [riskCardRefresh, setRiskCardRefresh] = useState(false);
   const [riskCardRedirect, setRiskCardRedirect] = useState(false);
+  const { copied: copiedUrl, copy: copyToClipboard } = useClipboard({ successMessage: 'URL copied!' });
 
   useEffect(() => {
     if (analysis && isComplete) {
@@ -69,16 +69,7 @@ export const Analysis: React.FC = () => {
     }
   };
 
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedUrl(true);
-      toast.success('URL copied!');
-      setTimeout(() => setCopiedUrl(false), 2000);
-    } catch {
-      toast.error('Failed to copy.');
-    }
-  };
+
 
   const openPdf = () => {
     if (analysisId && riskCardRedirect) {
@@ -101,8 +92,7 @@ export const Analysis: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-brand-bg flex flex-col">
-        <Navbar />
+      <PageLayout>
         <main className="flex-1 flex items-center justify-center pt-20 px-4">
           <div className="text-center max-w-md">
             <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -123,30 +113,27 @@ export const Analysis: React.FC = () => {
             </Link>
           </div>
         </main>
-        <Footer />
-      </div>
+      </PageLayout>
     );
   }
 
   if (isLoading && !analysis) {
     return (
-      <div className="min-h-screen bg-brand-bg">
-        <Navbar />
+      <PageLayout showFooter={false}>
         <div className="pt-20 max-w-3xl mx-auto px-4">
           <ProcessingState isComplete={false} />
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   if (isLoading && analysis && analysis.status === 'processing') {
     return (
-      <div className="min-h-screen bg-brand-bg">
-        <Navbar />
+      <PageLayout showFooter={false}>
         <div className="pt-20 max-w-3xl mx-auto px-4">
           <ProcessingState isComplete={false} />
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
@@ -164,9 +151,7 @@ export const Analysis: React.FC = () => {
     .join('\n\n---\n\n');
 
   return (
-    <div className="min-h-screen bg-brand-bg flex flex-col">
-      <Navbar />
-
+    <PageLayout>
       {/* Sticky top summary bar */}
       <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-brand-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -422,7 +407,6 @@ export const Analysis: React.FC = () => {
         </div>
       </main>
 
-      <Footer />
-    </div>
+    </PageLayout>
   );
 };

@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { ArrowRight, History as HistoryIcon, Loader2, Sparkles } from 'lucide-react';
-import { Navbar } from '../components/layout/Navbar';
-import { Footer } from '../components/layout/Footer';
+import { PageLayout } from '../components/shared/PageLayout';
+import { GridBackground } from '../components/shared/GridBackground';
 import { HistoryRow } from '../components/history/HistoryRow';
 import { useApp } from '../contexts/AppContext';
 import { useAnalysisHistory } from '../hooks/useAnalysisHistory';
@@ -13,20 +13,11 @@ export const History: React.FC = () => {
   const { items, isLoading, error, refresh } = useAnalysisHistory(userId);
 
   return (
-    <div className="min-h-screen bg-brand-bg flex flex-col">
-      <Navbar />
-
+    <PageLayout>
       <main className="flex-1 pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto space-y-6">
           <section className="rounded-3xl bg-brand-textPrimary p-8 text-white shadow-sm overflow-hidden relative">
-            <div
-              className="absolute inset-0 opacity-[0.06]"
-              style={{
-                backgroundImage:
-                  'linear-gradient(rgba(29,158,117,1) 1px, transparent 1px), linear-gradient(90deg, rgba(29,158,117,1) 1px, transparent 1px)',
-                backgroundSize: '56px 56px',
-              }}
-            />
+            <GridBackground />
             <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-2xl">
                 <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm text-white/80">
@@ -127,8 +118,6 @@ export const History: React.FC = () => {
           </section>
         </div>
       </main>
-
-      <Footer />
-    </div>
+    </PageLayout>
   );
 };

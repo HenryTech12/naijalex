@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { clsx } from 'clsx';
 import type { EndpointConfig } from '../../types';
 import { useApp } from '../../contexts/AppContext';
+import { useClipboard } from '../../hooks/useClipboard';
 import {
   API_BASE,
   getHealth,
@@ -45,7 +46,7 @@ export const EndpointForm: React.FC<EndpointFormProps> = ({ endpoint, onResponse
     setRiskCardUrl,
   } = useApp();
   const [isLoading, setIsLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useClipboard({ successMessage: 'cURL copied!' });
 
   // Path params
   const [pathParams, setPathParams] = useState<Record<string, string>>({});
@@ -110,16 +111,7 @@ export const EndpointForm: React.FC<EndpointFormProps> = ({ endpoint, onResponse
     return curl;
   };
 
-  const copyCurl = async () => {
-    try {
-      await navigator.clipboard.writeText(buildCurl());
-      setCopied(true);
-      toast.success('cURL copied!');
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error('Failed to copy.');
-    }
-  };
+  const copyCurl = () => copy(buildCurl());
 
   const executeRequest = async () => {
     setIsLoading(true);
@@ -354,14 +346,7 @@ export const EndpointForm: React.FC<EndpointFormProps> = ({ endpoint, onResponse
                 Request Body (JSON)
               </label>
               <button
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText(jsonBody);
-                    toast.success('Request copied!');
-                  } catch {
-                    toast.error('Failed to copy request.');
-                  }
-                }}
+                onClick={() => copy(jsonBody)}
                 className="flex items-center gap-1 text-xs text-primary hover:underline"
               >
                 <Copy className="w-3 h-3" />

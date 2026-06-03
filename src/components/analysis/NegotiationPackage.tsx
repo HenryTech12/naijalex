@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, Copy, Check, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import toast from 'react-hot-toast';
+import { useClipboard } from '../../hooks/useClipboard';
 
 interface NegotiationPackageProps {
   content: string;
@@ -9,18 +9,7 @@ interface NegotiationPackageProps {
 
 export const NegotiationPackage: React.FC<NegotiationPackageProps> = ({ content }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  const copyPackage = async () => {
-    try {
-      await navigator.clipboard.writeText(content);
-      setCopied(true);
-      toast.success('Copied to clipboard! ✓');
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error('Could not copy to clipboard.');
-    }
-  };
+  const { copied, copy: copyPackage } = useClipboard({ successMessage: 'Copied to clipboard! ✓' });
 
   return (
     <div className="bg-white rounded-2xl border border-brand-border shadow-sm overflow-hidden">
@@ -44,7 +33,7 @@ export const NegotiationPackage: React.FC<NegotiationPackageProps> = ({ content 
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                copyPackage();
+                copyPackage(content);
               }}
               className="flex items-center gap-1.5 text-xs font-medium text-primary border border-primary/30 bg-primary-50 hover:bg-primary-100 px-3 py-1.5 rounded-lg transition-colors"
             >
@@ -77,7 +66,7 @@ export const NegotiationPackage: React.FC<NegotiationPackageProps> = ({ content 
                   className="w-full h-64 p-4 bg-brand-bg border border-brand-border rounded-xl text-sm font-mono text-brand-textPrimary leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
                 />
                 <button
-                  onClick={copyPackage}
+                  onClick={() => copyPackage(content)}
                   className="absolute top-3 right-3 flex items-center gap-1.5 text-xs font-medium text-primary bg-white border border-primary/30 hover:bg-primary-50 px-2.5 py-1.5 rounded-lg transition-colors shadow-sm"
                 >
                   {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}

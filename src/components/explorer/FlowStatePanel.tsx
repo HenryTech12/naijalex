@@ -1,22 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Copy, Check, X, User, FileText, FileCheck, ExternalLink } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
-import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { useClipboard } from '../../hooks/useClipboard';
 
 export const FlowStatePanel: React.FC = () => {
   const { userId, analysisRequestId, analysisId, riskCardUrl, clearFlow } = useApp();
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const { copy } = useClipboard({ successMessage: 'Copied!' });
 
   const copyField = async (field: string, value: string) => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopiedField(field);
-      toast.success('Copied!');
-      setTimeout(() => setCopiedField(null), 2000);
-    } catch {
-      toast.error('Failed to copy.');
-    }
+    await copy(value);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
   };
 
   const fields = [

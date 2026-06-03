@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Scale, Settings, Zap, Wifi, WifiOff } from 'lucide-react';
+import { Scale, Wifi, WifiOff } from 'lucide-react';
 import { EndpointList } from '../components/explorer/EndpointList';
 import { EndpointForm } from '../components/explorer/EndpointForm';
 import { ResponseViewer } from '../components/explorer/ResponseViewer';
 import { FlowStatePanel } from '../components/explorer/FlowStatePanel';
 import { WhatsAppSandboxCard } from '../components/explorer/WhatsAppSandboxCard';
+import { ModeToggle } from '../components/shared/ModeToggle';
 import { useApp } from '../contexts/AppContext';
 import { ENDPOINTS } from '../types/endpoints';
 import { API_BASE } from '../api/client';
@@ -58,30 +59,7 @@ export const Explorer: React.FC = () => {
               </div>
 
               {/* Mode toggle */}
-              <div className="flex items-center gap-1 p-0.5 bg-brand-bg border border-brand-border rounded-lg">
-                <button
-                  onClick={() => setMode('live')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                    mode === 'live'
-                      ? 'bg-white text-brand-textPrimary shadow-sm border border-brand-border'
-                      : 'text-brand-textSecondary hover:text-brand-textPrimary'
-                  }`}
-                >
-                  <Zap className="w-3 h-3" />
-                  Live API
-                </button>
-                <button
-                  onClick={() => setMode('demo')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                    mode === 'demo'
-                      ? 'bg-amber-100 text-warning border border-amber-200'
-                      : 'text-brand-textSecondary hover:text-brand-textPrimary'
-                  }`}
-                >
-                  <Settings className="w-3 h-3" />
-                  Demo
-                </button>
-              </div>
+              <ModeToggle mode={mode} onModeChange={setMode} />
             </div>
           </div>
         </div>
