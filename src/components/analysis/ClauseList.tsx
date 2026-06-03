@@ -21,13 +21,17 @@ const filterBadge: Record<string, string> = {
 export const ClauseList: React.FC<ClauseListProps> = ({ clauses, languageMode }) => {
   const [activeFilter, setActiveFilter] = useState<Filter>('All');
 
-  const sorted = [...clauses].sort((a, b) => a.urgency_rank - b.urgency_rank);
+  // ADD THIS LINE — guard against undefined prop
+  const safeClauses = clauses ?? [];
+
+  const sorted = [...safeClauses].sort((a, b) => a.urgency_rank - b.urgency_rank);
   const filtered =
     activeFilter === 'All' ? sorted : sorted.filter((c) => c.severity === activeFilter);
 
   const count = (f: Filter) =>
-    f === 'All' ? clauses.length : clauses.filter((c) => c.severity === f).length;
+    f === 'All' ? safeClauses.length : safeClauses.filter((c) => c.severity === f).length;
 
+  // rest unchanged...
   return (
     <div>
       <div className="flex items-center gap-2 flex-wrap mb-6">

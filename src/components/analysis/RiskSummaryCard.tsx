@@ -20,7 +20,10 @@ export const RiskSummaryCard: React.FC<RiskSummaryCardProps> = ({
   summary,
   processingTimeMs,
 }) => {
-  const counts = clauses.reduce(
+  // ADD THIS LINE
+  const safeClauses = clauses ?? [];
+
+  const counts = safeClauses.reduce(
     (acc, c) => {
       acc[c.severity] = (acc[c.severity] || 0) + 1;
       return acc;
@@ -34,6 +37,8 @@ export const RiskSummaryCard: React.FC<RiskSummaryCardProps> = ({
     color: SEVERITY_COLORS[name as keyof typeof SEVERITY_COLORS] || '#ccc',
   }));
 
+  // Then replace clauses.length with safeClauses.length in the JSX:
+  // <p className="text-2xl font-bold text-brand-textPrimary">{safeClauses.length}</p>
   const riskBg: Record<RiskLevel, string> = {
     High: '#FFF0F0',
     Medium: '#FFF8ED',
@@ -70,7 +75,7 @@ export const RiskSummaryCard: React.FC<RiskSummaryCardProps> = ({
       <div className="p-6">
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div className="text-center p-3 bg-brand-bg rounded-xl">
-            <p className="text-2xl font-bold text-brand-textPrimary">{clauses.length}</p>
+            <p className="text-2xl font-bold text-brand-textPrimary">{safeClauses.length}</p>
             <p className="text-xs text-brand-textSecondary mt-1">Total Clauses</p>
           </div>
           <div className="text-center p-3 bg-red-50 rounded-xl">
