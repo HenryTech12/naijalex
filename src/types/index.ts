@@ -68,10 +68,10 @@ export interface AnalysisResult {
   filename?: string;
   created_at: string;
   language_mode: LanguageMode;
-  clauses: ClauseAnalysis[];
+  clauses: ClauseAnalysis[];          // change to: clauses: ClauseAnalysis[] | undefined;
   overall_risk: RiskLevel;
   summary: string;
-  top_3_actions: string[];
+  top_3_actions: string[];            // change to: top_3_actions: string[] | undefined;
   risk_card_url: string | null;
   processing_time_ms: number;
   status: 'processing' | 'complete' | 'failed';

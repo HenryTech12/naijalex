@@ -177,8 +177,7 @@ The Chrome extension bundle (`naijalex-extension/`) is a lightweight popup that 
 
 ```js
 // naijalex-extension/popup.js
-const API_BASE = 'https://naijalex.quikdb.net';
-const FRONTEND_BASE = 'https://naijalex-frontend.quikdb.net';
+const FRONTEND_BASE = 'https://naijalex.quikdb.net';
 ```
 
 During local testing you can load the extension as an unpacked extension in Chrome. For production, publish to the Chrome Web Store per Google's guidelines; the extension will call the QuikDB backend.

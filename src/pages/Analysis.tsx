@@ -387,7 +387,7 @@ export const Analysis: React.FC = () => {
                   {analysis.clauses.length} clauses found — sorted by urgency
                 </p>
 
-                {analysis.clauses.length === 0 ? (
+                {(analysis.clauses ?? []).length === 0 ? (
                   <div className="bg-white rounded-2xl border border-brand-border p-12 text-center">
                     <div className="w-12 h-12 bg-brand-bg rounded-xl flex items-center justify-center mx-auto mb-4">
                       <AlertCircle className="w-6 h-6 text-brand-textSecondary" />
@@ -404,7 +404,7 @@ export const Analysis: React.FC = () => {
                     </Link>
                   </div>
                 ) : (
-                  <ClauseList clauses={analysis.clauses} languageMode={analysis.language_mode} />
+                  <ClauseList clauses={analysis.clauses ?? []} languageMode={analysis.language_mode} />
                 )}
               </div>
 

@@ -1,4 +1,4 @@
-const API_BASE = 'https://naijalex.quikdb.net';
+const API_BASE = 'https://naijalex.onrender.com';
 const FRONTEND_BASE = 'https://naijalex.quikdb.net';
 
 let selectedFile = null;
