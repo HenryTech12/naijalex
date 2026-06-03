@@ -36,8 +36,13 @@ export const useAnalysis = (analysisId: string | null, userId?: string | null): 
       const result = userId ? await getSavedAnalysis(userId, analysisId) : await getAnalysis(analysisId);
       setAnalysis(result);
 
-      if (result.status === 'complete' || result.status === 'failed') {
+      if (result.status === 'complete') {
         setIsComplete(true);
+        setIsLoading(false);
+        stopPolling();
+        return;
+      } else if (result.status === 'failed') {
+        setError('Analysis failed. Please try again.');
         setIsLoading(false);
         stopPolling();
         return;
@@ -58,6 +63,7 @@ export const useAnalysis = (analysisId: string | null, userId?: string | null): 
 
   const startPolling = useCallback(() => {
     if (!analysisId) return;
+    if (intervalRef.current) return;
 
     setIsLoading(true);
     setIsComplete(false);
