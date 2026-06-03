@@ -90,7 +90,7 @@ export interface DocumentHistoryItem {
 }
 
 export interface DocumentHistoryResponse {
-  items: DocumentHistoryItem[];
+  items: DocumentHistoryItem[] | null;
 }
 
 export interface ChatRequest {
