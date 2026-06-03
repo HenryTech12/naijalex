@@ -105,7 +105,7 @@ export interface ChatResponse {
 // Risk Card
 export interface RiskCardResponse {
   analysis_id: string;
-  risk_card_url: string;
+  risk_card_url: string | null;
 }
 
 // WhatsApp Webhook
