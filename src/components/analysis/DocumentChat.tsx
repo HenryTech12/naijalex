@@ -75,37 +75,6 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({
 
   useEffect(() => {
     try {
-      const stored = sessionStorage.getItem(CHAT_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored) as Array<{
-          role: 'user' | 'assistant';
-          content: string;
-          timestamp: string;
-        }>;
-        setMessages(
-          parsed.map((message) => ({
-            ...message,
-            timestamp: new Date(message.timestamp),
-          }))
-        );
-        return;
-      }
-    } catch {}
-
-    setMessages([
-      {
-        role: 'assistant',
-        content:
-          languageMode === 'pidgin'
-            ? 'Hello! I don analyze your contract. Ask me anything about am — I dey here to help! 💬'
-            : "Hello! I've analyzed your contract. Ask me anything about it — I'm here to help! 💬",
-        timestamp: new Date(),
-      },
-    ]);
-  }, [CHAT_STORAGE_KEY, languageMode]);
-
-  useEffect(() => {
-    try {
       sessionStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
     } catch {}
   }, [messages, CHAT_STORAGE_KEY]);
@@ -264,12 +233,12 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({
                         : 'Ask anything about this contract...'
                     }
                     disabled={isLoading}
-                    className="flex-1 px-4 py-2.5 text-sm bg-brand-bg border border-brand-border rounded-xl text-brand-textPrimary placeholder:text-brand-textSecondary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary disabled:opacity-50"
+                    className="flex-1 px-4 py-2.5 text-sm bg-brand-bg border border-brand-border rounded-xl text-brand-textPrimary placeholder:text-brand-textSecondary focus:outline-none focus:ri[...]
                   />
                   <button
                     onClick={() => sendMessage(input)}
                     disabled={!input.trim() || isLoading}
-                    className="w-10 h-10 flex items-center justify-center bg-primary hover:bg-primary-600 disabled:bg-primary/40 disabled:cursor-not-allowed text-white rounded-xl transition-colors shrink-0"
+                    className="w-10 h-10 flex items-center justify-center bg-primary hover:bg-primary-600 disabled:bg-primary/40 disabled:cursor-not-allowed text-white rounded-xl transition-color[...]
                   >
                     {isLoading ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -279,7 +248,7 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({
                   </button>
                 </div>
                 <p className="text-xs text-brand-textSecondary mt-2 text-center">
-                  Press Enter to send • Powered by GPT-4o
+                  Press Enter to send • Powered by NaijaLex AI
                 </p>
               </div>
             </div>
