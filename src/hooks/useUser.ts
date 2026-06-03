@@ -29,6 +29,7 @@ export const useUser = (): UseUserResult => {
       setBusinessLabel(`${newUser.business_type} • ${newUser.industry}`);
       return newUser;
     } catch (err) {
+      console.error('[NaijaLex] Failed to create user profile:', err);
       const msg = 'Failed to create profile. Please try again.';
       setError(msg);
       throw new Error(msg);
@@ -45,6 +46,7 @@ export const useUser = (): UseUserResult => {
       setUser(profile);
       return profile;
     } catch (err) {
+      console.error('[NaijaLex] Failed to fetch user profile:', userId, err);
       const msg = 'Failed to fetch profile.';
       setError(msg);
       throw new Error(msg);

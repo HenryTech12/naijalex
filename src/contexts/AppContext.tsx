@@ -17,54 +17,75 @@ interface AppState extends FlowState {
 
 const AppContext = createContext<AppState | null>(null);
 
+const safeGetItem = (storage: Storage, key: string): string | null => {
+  try {
+    return storage.getItem(key);
+  } catch (err) {
+    console.warn(`[NaijaLex] Failed to read "${key}" from storage:`, err);
+    return null;
+  }
+};
+
+const safeSetItem = (storage: Storage, key: string, value: string): void => {
+  try {
+    storage.setItem(key, value);
+  } catch (err) {
+    console.warn(`[NaijaLex] Failed to write "${key}" to storage:`, err);
+  }
+};
+
+const safeRemoveItem = (storage: Storage, key: string): void => {
+  try {
+    storage.removeItem(key);
+  } catch (err) {
+    console.warn(`[NaijaLex] Failed to remove "${key}" from storage:`, err);
+  }
+};
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [userId, setUserIdState] = useState<string | null>(() => {
-    const stored = localStorage.getItem('naijalex_user_id');
-    return stored || null;
+    return safeGetItem(localStorage, 'naijalex_user_id') || null;
   });
   const [businessLabel, setBusinessLabelState] = useState<string | null>(() => {
-    return localStorage.getItem('naijalex_business_label') || '';
+    return safeGetItem(localStorage, 'naijalex_business_label') || '';
   });
   const [analysisRequestId, setAnalysisRequestIdState] = useState<string | null>(() => {
-    const stored = sessionStorage.getItem('naijalex_analysis_request_id');
-    return stored || null;
+    return safeGetItem(sessionStorage, 'naijalex_analysis_request_id') || null;
   });
   const [analysisId, setAnalysisIdState] = useState<string | null>(() => {
-    const stored = sessionStorage.getItem('naijalex_analysis_id');
-    return stored || null;
+    return safeGetItem(sessionStorage, 'naijalex_analysis_id') || null;
   });
   const [riskCardUrl, setRiskCardUrlState] = useState<string | null>(() => {
-    const stored = sessionStorage.getItem('naijalex_risk_card_url');
-    return stored || null;
+    return safeGetItem(sessionStorage, 'naijalex_risk_card_url') || null;
   });
   const [analysisHistory, setAnalysisHistory] = useState<AnalysisResult[]>([]);
   const [mode, setModeState] = useState<'live' | 'demo'>(() => {
-    const stored = localStorage.getItem('naijalex_mode');
+    const stored = safeGetItem(localStorage, 'naijalex_mode');
     return (stored as 'live' | 'demo') || 'live';
   });
 
   const setUserId = useCallback((id: string) => {
-    localStorage.setItem('naijalex_user_id', id);
+    safeSetItem(localStorage, 'naijalex_user_id', id);
     setUserIdState(id);
   }, []);
 
   const setBusinessLabel = useCallback((label: string) => {
-    localStorage.setItem('naijalex_business_label', label);
+    safeSetItem(localStorage, 'naijalex_business_label', label);
     setBusinessLabelState(label);
   }, []);
 
   const setAnalysisRequestId = useCallback((id: string) => {
-    sessionStorage.setItem('naijalex_analysis_request_id', id);
+    safeSetItem(sessionStorage, 'naijalex_analysis_request_id', id);
     setAnalysisRequestIdState(id);
   }, []);
 
   const setAnalysisId = useCallback((id: string) => {
-    sessionStorage.setItem('naijalex_analysis_id', id);
+    safeSetItem(sessionStorage, 'naijalex_analysis_id', id);
     setAnalysisIdState(id);
   }, []);
 
   const setRiskCardUrl = useCallback((url: string) => {
-    sessionStorage.setItem('naijalex_risk_card_url', url);
+    safeSetItem(sessionStorage, 'naijalex_risk_card_url', url);
     setRiskCardUrlState(url);
   }, []);
 
@@ -77,14 +98,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, []);
 
   const setMode = useCallback((newMode: 'live' | 'demo') => {
-    localStorage.setItem('naijalex_mode', newMode);
+    safeSetItem(localStorage, 'naijalex_mode', newMode);
     setModeState(newMode);
   }, []);
 
   const clearFlow = useCallback(() => {
-    sessionStorage.removeItem('naijalex_analysis_request_id');
-    sessionStorage.removeItem('naijalex_analysis_id');
-    sessionStorage.removeItem('naijalex_risk_card_url');
+    safeRemoveItem(sessionStorage, 'naijalex_analysis_request_id');
+    safeRemoveItem(sessionStorage, 'naijalex_analysis_id');
+    safeRemoveItem(sessionStorage, 'naijalex_risk_card_url');
     setAnalysisRequestIdState(null);
     setAnalysisIdState(null);
     setRiskCardUrlState(null);

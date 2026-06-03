@@ -63,6 +63,7 @@ export const Analysis: React.FC = () => {
       setRiskCardUrl(data.risk_card_url);
       toast.success(refresh ? 'Risk card regenerated!' : 'Risk card loaded!');
     } catch (err) {
+      console.error('[NaijaLex] Risk card fetch failed for analysis:', analysisId, err);
       toast.error('Failed to fetch risk card. Try refresh=true to regenerate.');
     } finally {
       setIsLoadingRiskCard(false);

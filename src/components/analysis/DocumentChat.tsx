@@ -45,7 +45,9 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({
           timestamp: new Date(message.timestamp),
         }));
       }
-    } catch {}
+    } catch (err) {
+      console.warn('[NaijaLex] Failed to restore chat history from sessionStorage:', err);
+    }
 
     return [
       {
@@ -76,7 +78,9 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({
   useEffect(() => {
     try {
       sessionStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
-    } catch {}
+    } catch (err) {
+      console.warn('[NaijaLex] Failed to persist chat history to sessionStorage:', err);
+    }
   }, [messages, CHAT_STORAGE_KEY]);
 
   const sendMessage = async (question: string) => {

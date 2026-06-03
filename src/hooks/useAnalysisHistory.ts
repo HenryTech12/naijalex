@@ -28,7 +28,8 @@ export const useAnalysisHistory = (userId: string | null): UseAnalysisHistoryRes
     try {
       const response = await getAnalysisHistory(effectiveUserId);
       setItems(response.items);
-    } catch {
+    } catch (err) {
+      console.error('[NaijaLex] Failed to load analysis history for user:', effectiveUserId, err);
       setError('Failed to load analysis history.');
     } finally {
       setIsLoading(false);
