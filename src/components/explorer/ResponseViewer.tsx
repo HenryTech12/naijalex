@@ -110,15 +110,19 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({ response, error 
 
       <div className="px-4 py-2 border-b border-brand-border bg-white text-xs text-brand-textSecondary flex flex-wrap items-center gap-3">
         <span className="font-medium text-brand-textPrimary">Headers</span>
-        {Object.keys(response!.headers).length > 0 ? (
-          Object.entries(response!.headers).slice(0, 4).map(([key, value]) => (
-            <span key={key} className="rounded-full bg-brand-bg border border-brand-border px-2 py-0.5 font-mono">
-              {key}: {value}
-            </span>
-          ))
-        ) : (
-          <span>Not available for mock responses</span>
-        )}
+        {(() => {
+          const headers = response?.headers ?? {};
+          const entries = Object.entries(headers);
+          return entries.length > 0 ? (
+            entries.slice(0, 4).map(([key, value]) => (
+              <span key={key} className="rounded-full bg-brand-bg border border-brand-border px-2 py-0.5 font-mono">
+                {key}: {value}
+              </span>
+            ))
+          ) : (
+            <span>Not available for mock responses</span>
+          );
+        })()}
       </div>
 
       {/* Response body */}

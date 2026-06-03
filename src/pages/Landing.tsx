@@ -30,8 +30,8 @@ const stagger = {
 export const Landing: React.FC = () => {
   const { userId, mode, setMode } = useApp();
   const { items: historyItems } = useAnalysisHistory(userId);
-  const recentItems = historyItems.slice(0, 3);
-  const latestItem = historyItems[0];
+  const recentItems = (historyItems ?? []).slice(0, 3);
+  const latestItem = (historyItems && historyItems.length > 0) ? historyItems[0] : null;
 
   const summaryCards = [
     {
