@@ -55,7 +55,6 @@ export const useAnalysis = (analysisId: string | null, userId?: string | null): 
         stopPolling();
       }
     } catch (err) {
-      console.error('[NaijaLex] Polling error for analysis:', analysisId, err);
       setError('Failed to fetch analysis. Please check your connection.');
       setIsLoading(false);
       stopPolling();
@@ -64,7 +63,7 @@ export const useAnalysis = (analysisId: string | null, userId?: string | null): 
 
   const startPolling = useCallback(() => {
     if (!analysisId) return;
-    if (intervalRef.current) return;
+    if (intervalRef.current) return; // already polling
 
     setIsLoading(true);
     setIsComplete(false);
@@ -84,11 +83,10 @@ export const useAnalysis = (analysisId: string | null, userId?: string | null): 
 
   // Auto-start polling if analysisId is provided and status is processing
   useEffect(() => {
-    if (analysisId && !analysis && !isComplete && !isPolling) {
-      startPolling();
-    }
+  if (analysisId && !analysis && !isComplete && !isPolling) {
+    startPolling();
+  }
   }, [analysisId, analysis, isComplete, isPolling, startPolling]);
-
   return {
     analysis,
     isLoading,

@@ -42,13 +42,31 @@ const safeRemoveItem = (storage: Storage, key: string): void => {
   }
 };
 
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Clean up any corrupted localStorage values from previous broken deployments
+  if (typeof window !== 'undefined') {
+    const uid = localStorage.getItem('naijalex_user_id');
+    const label = localStorage.getItem('naijalex_business_label');
+    if (!uid || uid === 'undefined' || uid === 'null') {
+      localStorage.removeItem('naijalex_user_id');
+    }
+    if (!label || label.includes('undefined') || label.includes('null')) {
+      localStorage.removeItem('naijalex_business_label');
+    }
+  }
+
+  // ...rest of existing code
   const [userId, setUserIdState] = useState<string | null>(() => {
-    return safeGetItem(localStorage, 'naijalex_user_id') || null;
+    const stored = localStorage.getItem('naijalex_user_id');
+    return stored && stored !== 'undefined' && stored !== 'null' ? stored : null;
   });
+
   const [businessLabel, setBusinessLabelState] = useState<string | null>(() => {
-    return safeGetItem(localStorage, 'naijalex_business_label') || '';
+    const stored = localStorage.getItem('naijalex_business_label');
+    return stored && !stored.includes('undefined') && !stored.includes('null') ? stored : null;
   });
+
   const [analysisRequestId, setAnalysisRequestIdState] = useState<string | null>(() => {
     return safeGetItem(sessionStorage, 'naijalex_analysis_request_id') || null;
   });

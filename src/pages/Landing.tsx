@@ -42,7 +42,7 @@ export const Landing: React.FC = () => {
     },
     {
       label: 'Saved analyses',
-      value: String(historyItems.length),
+      value: String((historyItems ?? []).length),
       hint: userId ? `Linked to ${userId}` : 'Create a profile to save history',
       icon: History,
     },

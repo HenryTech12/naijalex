@@ -32,11 +32,26 @@ liveApi.interceptors.request.use((config) => {
   const token = typeof window !== 'undefined'
     ? window.localStorage.getItem(AUTH_TOKEN_KEY)
     : null;
-  if (token) {
+  // Only attach if token is a real non-empty string
+  if (token && token !== 'null' && token !== 'undefined' && token.length > 0) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
+
+liveApi.interceptors.response.use(
+  (response) => {
+    // Warn if a user-creation response is missing id
+    if (response.config.url?.includes('/users/') && response.data && !response.data.id) {
+      console.warn('[NaijaLex] User response missing id field:', response.data);
+    }
+    return response;
+  },
+  (error: AxiosError) => {
+    console.error('[NaijaLex] API error:', error.response?.status, error.response?.data);
+    return Promise.reject(error);
+  }
+);
 
 export const setAuthToken = (token: string): void => {
   if (typeof window !== 'undefined') {
@@ -111,7 +126,7 @@ const defaultClauseTemplates: ClauseAnalysis[] = [
 ];
 
 const demoAnswer = (question: string, analysis: AnalysisResult): string => {
-  const riskyClause = analysis.clauses[0];
+  const riskyClause = (analysis.clauses ?? [])[0];  
   const prefix = analysis.language_mode === 'pidgin'
     ? 'Based on your analysis,'
     : 'Based on this analysis,';
@@ -123,8 +138,8 @@ const demoAnswer = (question: string, analysis: AnalysisResult): string => {
   }
 
   return analysis.language_mode === 'pidgin'
-    ? `${prefix} the biggest issue is ${riskyClause?.title ?? 'the first risky clause'}. You should focus on ${analysis.top_3_actions[0] ?? 'the top action'} first.`
-    : `${prefix} the biggest issue is ${riskyClause?.title ?? 'the first risky clause'}. You should focus on ${analysis.top_3_actions[0] ?? 'the top action'} first.`;
+  ? `${prefix} the biggest issue is ${riskyClause?.title ?? 'the first risky clause'}. You should focus on ${(analysis.top_3_actions ?? [])[0] ?? 'the top action'} first.`
+  : `${prefix} the biggest issue is ${riskyClause?.title ?? 'the first risky clause'}. You should focus on ${(analysis.top_3_actions ?? [])[0] ?? 'the top action'} first.`;   
 };
 
 const createId = () => {

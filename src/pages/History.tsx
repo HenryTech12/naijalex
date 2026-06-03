@@ -79,7 +79,7 @@ export const History: React.FC = () => {
             </div>
             <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-sm">
               <p className="text-xs uppercase tracking-wide text-brand-textSecondary">Saved analyses</p>
-              <p className="mt-2 text-lg font-semibold text-brand-textPrimary">{items.length}</p>
+              <p className="mt-2 text-lg font-semibold text-brand-textPrimary">{(items ?? []).length}</p>
               <p className="mt-2 text-sm text-brand-textSecondary">Open any row to inspect clauses, summary, actions, and risk card links.</p>
             </div>
             <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-sm">
@@ -104,7 +104,7 @@ export const History: React.FC = () => {
                   <Loader2 className="w-5 h-5 animate-spin mr-2" />
                   Loading history
                 </div>
-              ) : items.length > 0 ? (
+              ) : (items ?? []).length > 0 ? (
                 items.map((item) => (
                   <HistoryRow key={item.analysis_id} item={item} to={`/history/${item.user_id}/${item.analysis_id}`} />
                 ))

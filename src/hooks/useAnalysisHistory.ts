@@ -15,26 +15,24 @@ export const useAnalysisHistory = (userId: string | null): UseAnalysisHistoryRes
   const [error, setError] = useState<string | null>(null);
   const effectiveUserId = userId || (getCurrentApiMode() === 'demo' ? 'demo-user' : null);
 
-  const refresh = useCallback(async () => {
-    if (!effectiveUserId) {
-      setItems([]);
-      setError(null);
-      return;
-    }
-
-    setIsLoading(true);
+  // Replace the refresh definition with:
+const refresh = useCallback(async () => {
+  if (!effectiveUserId) {
+    setItems([]);
     setError(null);
-
-    try {
-      const response = await getAnalysisHistory(effectiveUserId);
-      setItems(response.items);
-    } catch (err) {
-      console.error('[NaijaLex] Failed to load analysis history for user:', effectiveUserId, err);
-      setError('Failed to load analysis history.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [effectiveUserId]);
+    return;
+  }
+  setIsLoading(true);
+  setError(null);
+  try {
+    const response = await getAnalysisHistory(effectiveUserId);
+    setItems(response.items ?? []);
+  } catch {
+    setError('Failed to load analysis history.');
+  } finally {
+    setIsLoading(false);
+  }
+}, [effectiveUserId]);
 
   useEffect(() => {
     void refresh();
