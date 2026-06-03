@@ -60,7 +60,9 @@ export const Analysis: React.FC = () => {
 
       const data = await getRiskCard(analysisId, { refresh });
       setRiskCardData(data);
-      setRiskCardUrl(data.risk_card_url);
+      if (data.risk_card_url) {
+        setRiskCardUrl(data.risk_card_url);
+      }
       toast.success(refresh ? 'Risk card regenerated!' : 'Risk card loaded!');
     } catch (err) {
       console.error('[NaijaLex] Risk card fetch failed for analysis:', analysisId, err);
@@ -197,7 +199,7 @@ export const Analysis: React.FC = () => {
               {analysis.risk_card_url && !riskCardData && (
                 <button
                   onClick={() => fetchRiskCard(riskCardRefresh, riskCardRedirect)}
-                  className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-primary border border-primary/30 bg-primary-50 hover:bg-primary-100 px-3 py-2 rounded-lg transition-color[...]
+                  className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-primary border border-primary/30 bg-primary-50 hover:bg-primary-100 px-3 py-2 rounded-lg transition-colors"
                 >
                   <Eye className="w-3.5 h-3.5" />
                   Load Risk Card
@@ -266,8 +268,8 @@ export const Analysis: React.FC = () => {
                           Open PDF
                         </button>
                         <button
-                          onClick={() => copyToClipboard(riskCardData.risk_card_url)}
-                          className="flex items-center gap-1.5 text-xs font-medium text-brand-textSecondary border border-brand-border bg-white hover:bg-brand-bg px-3 py-2 rounded-lg transition-c[...]
+                          onClick={() => copyToClipboard(riskCardData.risk_card_url ?? '')}
+                          className="flex items-center gap-1.5 text-xs font-medium text-brand-textSecondary border border-brand-border bg-white hover:bg-brand-bg px-3 py-2 rounded-lg transition-colors"
                         >
                           {copiedUrl ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
                           {copiedUrl ? 'Copied!' : 'Copy URL'}
@@ -275,7 +277,7 @@ export const Analysis: React.FC = () => {
                         <button
                           onClick={() => fetchRiskCard(true, riskCardRedirect)}
                           disabled={isLoadingRiskCard}
-                          className="flex items-center gap-1.5 text-xs font-medium text-warning border border-warning/30 bg-warning-50 hover:bg-amber-100 px-3 py-2 rounded-lg transition-colors di[...]
+                          className="flex items-center gap-1.5 text-xs font-medium text-warning border border-warning/30 bg-warning-50 hover:bg-amber-100 px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
                         >
                           <RefreshCw className={`w-3.5 h-3.5 ${isLoadingRiskCard ? 'animate-spin' : ''}`} />
                           Refresh
@@ -313,7 +315,7 @@ export const Analysis: React.FC = () => {
                       {showPdfViewer && (
                         <div className="mt-3 border border-brand-border rounded-lg overflow-hidden">
                           <iframe
-                            src={riskCardData.risk_card_url}
+                            src={riskCardData.risk_card_url ?? undefined}
                             className="w-full h-64"
                             title="Risk Card PDF"
                           />
@@ -330,7 +332,7 @@ export const Analysis: React.FC = () => {
                       <button
                         onClick={() => fetchRiskCard(!!analysis.risk_card_url || riskCardRefresh, riskCardRedirect)}
                         disabled={isLoadingRiskCard}
-                        className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-600 disabled:bg-primary/50 text-white px-4 py-2.5 rounded-lg text-sm font-medium trans[...]
+                        className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-600 disabled:bg-primary/50 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors"
                       >
                         {isLoadingRiskCard ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
