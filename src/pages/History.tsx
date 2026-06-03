@@ -51,9 +51,17 @@ export const History: React.FC = () => {
                 </Link>
                 <button
                   onClick={() => void refresh()}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 px-5 py-3 font-medium text-white transition-colors hover:bg-white/5"
+                  disabled={isLoading}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 px-5 py-3 font-medium text-white transition-colors hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Refresh
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Refreshing...
+                    </>
+                  ) : (
+                    'Refresh'
+                  )}
                 </button>
               </div>
             </div>
