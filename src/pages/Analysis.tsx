@@ -14,7 +14,7 @@ import { TextToSpeech } from '../components/analysis/TextToSpeech';
 import { DocumentChat } from '../components/analysis/DocumentChat';
 import { useAnalysis } from '../hooks/useAnalysis';
 import { useApp } from '../contexts/AppContext';
-import { getRiskCard, getRiskCardUrl, API_BASE } from '../api/client';
+import { getRiskCard, getRiskCardUrl } from '../api/client';
 import type { RiskCardResponse } from '../types';
 
 export const Analysis: React.FC = () => {

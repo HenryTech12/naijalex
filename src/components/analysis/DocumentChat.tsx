@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Loader2, MessageCircle, ChevronDown, ChevronUp, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { clsx } from 'clsx';
 import toast from 'react-hot-toast';
 import { askQuestion, type ChatMessage } from '../../api/chat';
 import type { LanguageMode } from '../../types';
+import { ChatMessageBubble } from './ChatMessageBubble';
 
 interface DocumentChatProps {
   analysisId: string;
@@ -30,16 +30,34 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({
   languageMode,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: 'assistant',
-      content:
-        languageMode === 'pidgin'
-          ? 'Hello! I don analyze your contract. Ask me anything about am — I dey here to help! 💬'
-          : "Hello! I've analyzed your contract. Ask me anything about it — I'm here to help! 💬",
-      timestamp: new Date(),
-    },
-  ]);
+  const CHAT_STORAGE_KEY = `naijalex_chat_${analysisId}`;
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    try {
+      const stored = sessionStorage.getItem(CHAT_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored) as Array<{
+          role: 'user' | 'assistant';
+          content: string;
+          timestamp: string;
+        }>;
+        return parsed.map((message) => ({
+          ...message,
+          timestamp: new Date(message.timestamp),
+        }));
+      }
+    } catch {}
+
+    return [
+      {
+        role: 'assistant',
+        content:
+          languageMode === 'pidgin'
+            ? 'Hello! I don analyze your contract. Ask me anything about am — I dey here to help! 💬'
+            : "Hello! I've analyzed your contract. Ask me anything about it — I'm here to help! 💬",
+        timestamp: new Date(),
+      },
+    ];
+  });
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -54,6 +72,43 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({
       setTimeout(() => inputRef.current?.focus(), 300);
     }
   }, [isOpen, messages]);
+
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem(CHAT_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored) as Array<{
+          role: 'user' | 'assistant';
+          content: string;
+          timestamp: string;
+        }>;
+        setMessages(
+          parsed.map((message) => ({
+            ...message,
+            timestamp: new Date(message.timestamp),
+          }))
+        );
+        return;
+      }
+    } catch {}
+
+    setMessages([
+      {
+        role: 'assistant',
+        content:
+          languageMode === 'pidgin'
+            ? 'Hello! I don analyze your contract. Ask me anything about am — I dey here to help! 💬'
+            : "Hello! I've analyzed your contract. Ask me anything about it — I'm here to help! 💬",
+        timestamp: new Date(),
+      },
+    ]);
+  }, [CHAT_STORAGE_KEY, languageMode]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
+    } catch {}
+  }, [messages, CHAT_STORAGE_KEY]);
 
   const sendMessage = async (question: string) => {
     if (!question.trim() || isLoading) return;
@@ -149,29 +204,12 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({
               {/* Message thread */}
               <div className="h-72 overflow-y-auto p-4 space-y-3 bg-brand-bg/30">
                 {messages.map((msg, i) => (
-                  <div
+                  <ChatMessageBubble
                     key={i}
-                    className={clsx(
-                      'flex gap-2 items-end',
-                      msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'
-                    )}
-                  >
-                    {msg.role === 'assistant' && (
-                      <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center shrink-0 mb-0.5">
-                        <Bot className="w-3.5 h-3.5 text-white" />
-                      </div>
-                    )}
-                    <div
-                      className={clsx(
-                        'max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed',
-                        msg.role === 'user'
-                          ? 'bg-primary text-white rounded-br-sm'
-                          : 'bg-white border border-brand-border text-brand-textPrimary rounded-bl-sm shadow-sm'
-                      )}
-                    >
-                      {msg.content}
-                    </div>
-                  </div>
+                    role={msg.role}
+                    content={msg.content}
+                    timestamp={msg.timestamp.toISOString()}
+                  />
                 ))}
 
                 {isLoading && (

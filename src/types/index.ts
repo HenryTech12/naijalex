@@ -142,6 +142,7 @@ export interface EndpointConfig {
 // Flow State
 export interface FlowState {
   userId: string | null;
+  businessLabel: string | null;
   analysisRequestId: string | null;
   analysisId: string | null;
   riskCardUrl: string | null;

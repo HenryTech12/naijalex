@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NaijaLex</title>
+    <style>
+      :root {
+        --bg: #f8f7f4;
+        --surface: #ffffff;
+        --surface-2: #f0fbf6;
+        --text: #1a1916;
+        --muted: #5f5e5a;
+        --border: #e5e4e0;
+        --primary: #1d9e75;
+        --primary-dark: #177f5e;
+        --danger: #e24b4a;
+        --warning: #ba7517;
+        --shadow: 0 18px 48px rgba(26, 25, 22, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 380px;
+        min-height: 200px;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background:
+          radial-gradient(circle at top right, rgba(29, 158, 117, 0.12), transparent 35%),
+          radial-gradient(circle at left bottom, rgba(26, 25, 22, 0.08), transparent 32%),
+          var(--bg);
+        color: var(--text);
+      }
+
+      .shell {
+        overflow: hidden;
+      }
+
+      .header {
+        background: #1a1916;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .header-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .header-logo {
+        width: 32px;
+        height: 32px;
+        background: var(--primary);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 13px;
+        color: white;
+      }
+
+      .header-title {
+        color: white;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 1;
+      }
+
+      .header-sub {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 11px;
+        margin-top: 1px;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--primary);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+
+      .main {
+        padding: 16px 20px 18px;
+      }
+
+      .detect-banner,
+      .upload-area,
+      .file-selected,
+      .lang-toggle,
+      .btn-analyze,
+      .btn-full,
+      .btn-new,
+      .error-box,
+      .summary-text,
+      .clause-item {
+        box-shadow: var(--shadow);
+      }
+
+      .detect-banner {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+        display: none;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+      }
+
+      .detect-icon {
+        font-size: 18px;
+      }
+
+      .detect-text {
+        flex: 1;
+        color: var(--muted);
+      }
+
+      .detect-text strong {
+        color: var(--text);
+        display: block;
+        margin-bottom: 2px;
+      }
+
+      .detect-use-btn {
+        border: none;
+        border-radius: 999px;
+        padding: 8px 12px;
+        background: var(--primary);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .upload-area {
+        border: 2px dashed var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: var(--surface);
+        margin-bottom: 14px;
+      }
+
+      .upload-area:hover,
+      .upload-area.dragover {
+        border-color: var(--primary);
+        background: var(--surface-2);
+      }
+
+      .upload-icon {
+        font-size: 28px;
+        margin-bottom: 8px;
+      }
+
+      .upload-title {
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+
+      .upload-sub {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .upload-area input {
+        display: none;
+      }
+
+      .file-selected {
+        background: var(--surface-2);
+        border: 1px solid var(--primary);
+        border-radius: 10px;
+        padding: 10px 14px;
+        display: none;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+        font-size: 12px;
+      }
+
+      .file-name {
+        flex: 1;
+        font-weight: 500;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .file-clear {
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1;
+      }
+
+      .file-clear:hover {
+        color: var(--danger);
+      }
+
+      .lang-toggle {
+        display: flex;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 3px;
+        margin-bottom: 14px;
+        gap: 2px;
+      }
+
+      .lang-btn {
+        flex: 1;
+        padding: 8px;
+        border: none;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: transparent;
+        color: var(--muted);
+      }
+
+      .lang-btn.active {
+        background: var(--primary);
+        color: white;
+      }
+
+      .lang-btn:not(.active):hover {
+        background: #f8f7f4;
+        color: var(--text);
+      }
+
+      .btn-analyze,
+      .btn-full,
+      .btn-new {
+        width: 100%;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-analyze {
+        padding: 12px;
+        background: var(--primary);
+        color: white;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .btn-analyze:hover {
+        background: var(--primary-dark);
+      }
+
+      .btn-analyze:disabled {
+        background: rgba(29, 158, 117, 0.5);
+        cursor: not-allowed;
+      }
+
+      .processing {
+        text-align: center;
+        padding: 24px 20px;
+        display: none;
+      }
+
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--border);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 12px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .processing-title {
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 4px;
+      }
+
+      .processing-sub {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .results {
+        padding: 0 20px 20px;
+        display: none;
+      }
+
+      .risk-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+        gap: 12px;
+      }
+
+      .risk-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+      }
+
+      .risk-HIGH {
+        background: #fff0f0;
+        color: var(--danger);
+        border: 1px solid #ffd6d6;
+      }
+
+      .risk-MEDIUM {
+        background: #fff8ed;
+        color: var(--warning);
+        border: 1px solid #ffe8c0;
+      }
+
+      .risk-LOW {
+        background: #f0fbf6;
+        color: var(--primary);
+        border: 1px solid #d4f3e6;
+      }
+
+      .summary-text {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.6;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 12px;
+      }
+
+      .top-clauses {
+        margin-bottom: 14px;
+      }
+
+      .top-clauses-title {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+
+      .clause-item {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--danger);
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin-bottom: 6px;
+      }
+
+      .clause-item.caution {
+        border-left-color: var(--warning);
+      }
+
+      .clause-item.standard {
+        border-left-color: var(--primary);
+      }
+
+      .clause-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 3px;
+      }
+
+      .clause-desc {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .btn-full {
+        padding: 11px;
+        background: #1a1916;
+        color: white;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .btn-full:hover {
+        background: #2d2c28;
+      }
+
+      .btn-new {
+        padding: 9px;
+        background: transparent;
+        color: var(--muted);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .btn-new:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .error-box {
+        background: #fff0f0;
+        border: 1px solid #ffd6d6;
+        border-radius: 10px;
+        padding: 12px;
+        font-size: 12px;
+        color: var(--danger);
+        margin-bottom: 12px;
+        text-align: center;
+        display: none;
+      }
+
+      .screen-upload {
+        display: block;
+      }
+    </style>
+    <script src="popup.js" defer></script>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="header">
+        <div class="header-brand">
+          <div class="header-logo">NL</div>
+          <div>
+            <div class="header-title">NaijaLex</div>
+            <div class="header-sub">Contract Analyzer</div>
+          </div>
+        </div>
+        <div class="status-dot" aria-hidden="true"></div>
+      </header>
+
+      <main class="main">
+        <div id="detectBanner" class="detect-banner">
+          <div class="detect-icon">📄</div>
+          <div class="detect-text">
+            <strong id="detectFilename">PDF detected</strong>
+            <span id="detectUrl">Click to analyze this document</span>
+          </div>
+          <button id="detectUseBtn" class="detect-use-btn" type="button">Use</button>
+        </div>
+
+        <div id="errorBox" class="error-box"></div>
+
+        <section id="screen-upload" class="screen-upload">
+          <div id="uploadArea" class="upload-area">
+            <div class="upload-icon">📋</div>
+            <div class="upload-title">Drop your contract here</div>
+            <div class="upload-sub">PDF, Image, or Word Doc • Max 10MB</div>
+            <input id="fileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.docx" />
+          </div>
+
+          <div id="fileSelectedDiv" class="file-selected">
+            <div>📄</div>
+            <div id="fileName" class="file-name">contract.pdf</div>
+            <div id="fileClear" class="file-clear" title="Remove file">✕</div>
+          </div>
+
+          <div class="lang-toggle" role="tablist" aria-label="Language mode">
+            <button id="btnEn" class="lang-btn" type="button">English</button>
+            <button id="btnPg" class="lang-btn active" type="button">Lagos Pidgin 🇳🇬</button>
+          </div>
+
+          <button id="analyzeBtn" class="btn-analyze" type="button" disabled>⚡ Analyze Contract</button>
+        </section>
+
+        <section id="screen-processing" class="processing">
+          <div class="spinner"></div>
+          <div class="processing-title">Analyzing your contract...</div>
+          <div id="processingStep" class="processing-sub">Reading document</div>
+          <div class="processing-sub" style="margin-top: 4px;">Usually takes 30–60 seconds</div>
+        </section>
+
+        <section id="screen-results" class="results">
+          <div class="risk-header">
+            <div id="riskBadge" class="risk-badge risk-MEDIUM">OVERALL RISK</div>
+          </div>
+
+          <div id="summaryText" class="summary-text"></div>
+
+          <div class="top-clauses">
+            <div class="top-clauses-title">Top risks</div>
+            <div id="clauseList"></div>
+          </div>
+
+          <button id="openFullBtn" class="btn-full" type="button">📊 Open Full Analysis</button>
+          <button id="resetBtn" class="btn-new" type="button">Analyze another contract</button>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

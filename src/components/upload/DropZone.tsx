@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { useDropzone, FileRejection, DropEvent } from 'react-dropzone';
 import { UploadCloud, FileText, X, CheckCircle2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { clsx } from 'clsx';
@@ -24,24 +24,27 @@ const getFileIcon = (type: string) => {
 };
 
 export const DropZone: React.FC<DropZoneProps> = ({ file, onFileSelect, onFileClear }) => {
-  const onDrop = useCallback(
-    (accepted: File[], rejected: { file: File; errors: { code: string }[] }[]) => {
-      if (rejected.length > 0) {
-        const err = rejected[0].errors[0];
-        if (err.code === 'file-too-large') {
-          toast.error('File is too large. Maximum size is 10MB.');
-        } else if (err.code === 'file-invalid-type') {
-          toast.error('Invalid file type. Please upload a PDF, image, or Word document.');
-        } else {
-          toast.error('Could not upload file. Please try again.');
-        }
-        return;
+  const onDrop = useCallback(<T extends File>(
+    accepted: T[],
+    rejected: FileRejection[],
+    _event?: DropEvent
+  ) => {
+    if (rejected.length > 0) {
+      const err = rejected[0].errors[0];
+      if (err.code === 'file-too-large') {
+        toast.error('File is too large. Maximum size is 10MB.');
+      } else if (err.code === 'file-invalid-type') {
+        toast.error('Invalid file type. Please upload a PDF, image, or Word document.');
+      } else {
+        toast.error('Could not upload file. Please try again.');
       }
-      if (accepted.length > 0) {
-        onFileSelect(accepted[0]);
-      }
-    },
-    [onFileSelect]
+      return;
+    }
+    if (accepted.length > 0) {
+      onFileSelect(accepted[0] as File);
+    }
+  },
+  [onFileSelect]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

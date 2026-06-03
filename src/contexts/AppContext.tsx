@@ -1,10 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import type { AnalysisResult, FlowState } from '../types';
 
 interface AppState extends FlowState {
   analysisHistory: AnalysisResult[];
   mode: 'live' | 'demo';
+  businessLabel: string | null;
   setUserId: (id: string) => void;
+  setBusinessLabel: (label: string) => void;
   setAnalysisRequestId: (id: string) => void;
   setAnalysisId: (id: string) => void;
   setRiskCardUrl: (url: string) => void;
@@ -15,12 +17,13 @@ interface AppState extends FlowState {
 
 const AppContext = createContext<AppState | null>(null);
 
-const STORAGE_KEY = 'naijalex_flow_state';
-
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [userId, setUserIdState] = useState<string | null>(() => {
     const stored = localStorage.getItem('naijalex_user_id');
     return stored || null;
+  });
+  const [businessLabel, setBusinessLabelState] = useState<string | null>(() => {
+    return localStorage.getItem('naijalex_business_label') || '';
   });
   const [analysisRequestId, setAnalysisRequestIdState] = useState<string | null>(() => {
     const stored = sessionStorage.getItem('naijalex_analysis_request_id');
@@ -43,6 +46,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setUserId = useCallback((id: string) => {
     localStorage.setItem('naijalex_user_id', id);
     setUserIdState(id);
+  }, []);
+
+  const setBusinessLabel = useCallback((label: string) => {
+    localStorage.setItem('naijalex_business_label', label);
+    setBusinessLabelState(label);
   }, []);
 
   const setAnalysisRequestId = useCallback((id: string) => {
@@ -86,12 +94,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     <AppContext.Provider
       value={{
         userId,
+        businessLabel,
         analysisRequestId,
         analysisId,
         riskCardUrl,
         analysisHistory,
         mode,
         setUserId,
+        setBusinessLabel,
         setAnalysisRequestId,
         setAnalysisId,
         setRiskCardUrl,

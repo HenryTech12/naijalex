@@ -13,7 +13,7 @@ interface UseUserResult {
 }
 
 export const useUser = (): UseUserResult => {
-  const { setUserId } = useApp();
+  const { setUserId, setBusinessLabel } = useApp();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +26,7 @@ export const useUser = (): UseUserResult => {
       const newUser = await createUser(data);
       setUser(newUser);
       setUserId(newUser.id);
+      setBusinessLabel(`${newUser.business_type} • ${newUser.industry}`);
       return newUser;
     } catch (err) {
       const msg = 'Failed to create profile. Please try again.';

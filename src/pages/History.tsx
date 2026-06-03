@@ -8,7 +8,7 @@ import { useAnalysisHistory } from '../hooks/useAnalysisHistory';
 
 export const History: React.FC = () => {
   const params = useParams<{ userId?: string }>();
-  const { userId: currentUserId, mode } = useApp();
+  const { userId: currentUserId, businessLabel, mode } = useApp();
   const userId = params.userId || currentUserId;
   const { items, isLoading, error, refresh } = useAnalysisHistory(userId);
 
@@ -62,7 +62,7 @@ export const History: React.FC = () => {
           <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-sm">
               <p className="text-xs uppercase tracking-wide text-brand-textSecondary">Active user</p>
-              <p className="mt-2 text-lg font-semibold text-brand-textPrimary">{userId || 'No user selected'}</p>
+              <p className="mt-2 text-lg font-semibold text-brand-textPrimary">{businessLabel || userId || 'No user selected'}</p>
               <p className="mt-2 text-sm text-brand-textSecondary">
                 {mode === 'demo'
                   ? 'Demo Mode is serving mock history.'

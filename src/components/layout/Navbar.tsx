@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Scale, FileText, Terminal, History } from 'lucide-react';
+import { clsx } from 'clsx';
 import { useApp } from '../../contexts/AppContext';
 
 export const Navbar: React.FC = () => {
@@ -8,6 +9,7 @@ export const Navbar: React.FC = () => {
   const { userId } = useApp();
   const isLanding = location.pathname === '/';
   const isExplorer = location.pathname === '/explorer';
+  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(`${path}/`);
 
   // Don't show navbar on explorer page (it has its own header)
   if (isExplorer) return null;
@@ -44,21 +46,27 @@ export const Navbar: React.FC = () => {
             </Link>
             <Link
               to="/analyze"
-              className={`text-sm font-medium transition-colors ${
-                isLanding
-                  ? 'text-white/80 hover:text-white'
-                  : 'text-brand-textSecondary hover:text-brand-textPrimary'
-              }`}
+              className={clsx(
+                'text-sm font-medium transition-colors',
+                isActive('/analyze')
+                  ? 'text-primary border-b-2 border-primary pb-0.5'
+                  : isLanding
+                    ? 'text-white/80 hover:text-white'
+                    : 'text-brand-textSecondary hover:text-brand-textPrimary'
+              )}
             >
               Analyze
             </Link>
             <Link
               to="/explorer"
-              className={`text-sm font-medium transition-colors flex items-center gap-1 ${
-                isLanding
-                  ? 'text-white/80 hover:text-white'
-                  : 'text-brand-textSecondary hover:text-brand-textPrimary'
-              }`}
+              className={clsx(
+                'text-sm font-medium transition-colors flex items-center gap-1',
+                isActive('/explorer')
+                  ? 'text-primary border-b-2 border-primary pb-0.5'
+                  : isLanding
+                    ? 'text-white/80 hover:text-white'
+                    : 'text-brand-textSecondary hover:text-brand-textPrimary'
+              )}
             >
               <Terminal className="w-3.5 h-3.5" />
               API Explorer
@@ -66,11 +74,14 @@ export const Navbar: React.FC = () => {
             {userId && (
               <Link
                 to={`/history/${userId}`}
-                className={`text-sm font-medium transition-colors flex items-center gap-1 ${
-                  isLanding
-                    ? 'text-white/80 hover:text-white'
-                    : 'text-brand-textSecondary hover:text-brand-textPrimary'
-                }`}
+                className={clsx(
+                  'text-sm font-medium transition-colors flex items-center gap-1',
+                  isActive('/history')
+                    ? 'text-primary border-b-2 border-primary pb-0.5'
+                    : isLanding
+                      ? 'text-white/80 hover:text-white'
+                      : 'text-brand-textSecondary hover:text-brand-textPrimary'
+                )}
               >
                 <History className="w-3.5 h-3.5" />
                 History

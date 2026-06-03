@@ -26,7 +26,7 @@ AI-powered legal document understanding for Nigerian SMEs. Full frontend with co
 # Install dependencies
 npm install
 
-# Start development server
+# Start development server (uses demo mode / local API)
 npm run dev
 
 # Build for production
@@ -45,7 +45,7 @@ VITE_WHATSAPP_SANDBOX_QR_URL=https://example.com/whatsapp-sandbox-qr.png
 VITE_WHATSAPP_SANDBOX_DEEPLINK=
 ```
 
-For production, set this to your deployed backend URL.
+For production, set this to your deployed backend URL. In this project all production deployments (frontend and backend) are hosted on QuikDB. Use the QuikDB dashboard or CLI to set environment variables and deploy artifacts.
 
 `VITE_WHATSAPP_SANDBOX_DEEPLINK` is optional. If omitted, the frontend builds a WhatsApp deeplink from the sandbox number and join code.
 
@@ -114,10 +114,51 @@ The frontend shows buttons to:
 - Refresh/regenerate PDF
 - View embedded PDF in iframe
 
+## Deployment on QuikDB (production)
+
+This project is deployed to QuikDB. The frontend is a static site served from QuikDB static hosting, and the backend is hosted as QuikDB serverless functions (or an HTTP service) at `https://naijalex.quikdb.net`.
+
+1. Build the frontend:
+
+```bash
+npm run build
+```
+
+2. Configure QuikDB environment variables (Dashboard → Project Settings) for the frontend and functions:
+
+- `VITE_API_BASE_URL=https://naijalex.quikdb.net`
+- `VITE_WHATSAPP_SANDBOX_NUMBER` — as applicable
+- `VITE_WHATSAPP_SANDBOX_JOIN_CODE` — as applicable
+- `VITE_WHATSAPP_SANDBOX_QR_URL` — optional
+
+3. Deploy the frontend build to QuikDB static hosting (example using the QuikDB CLI):
+
+```bash
+# Example commands — replace with your QuikDB CLI invocation
+quikdb login
+quikdb deploy site --path=./dist --name=naijalex-frontend
+```
+
+4. Deploy the backend API to QuikDB (serverless functions or service):
+
+```bash
+# Example (adjust to your backend language/framework)
+quikdb deploy functions --path=./api --name=naijalex-api
+```
+
+5. Verify deployment:
+
+- Frontend should be available at your QuikDB site URL (set in QuikDB dashboard).
+- API endpoints should be reachable at `https://naijalex.quikdb.net/api/v1/...`.
+
+Notes:
+- If you use a custom domain, configure DNS in the QuikDB dashboard and update `VITE_API_BASE_URL` to the custom domain.
+- QuikDB provides environment variable management — set production secrets and configuration there rather than committing them to the repo.
+
 ## Development
 
 ```bash
-# Run dev server
+# Run dev server (local, connects to local API or demo mode)
 npm run dev
 
 # Type check
@@ -129,6 +170,18 @@ npm run lint
 # Build
 npm run build
 ```
+
+## Browser Extension & QuikDB
+
+The Chrome extension bundle (`naijalex-extension/`) is a lightweight popup that calls the same QuikDB-hosted backend. Before publishing or packaging the extension, ensure `popup.js` points to the QuikDB API base:
+
+```js
+// naijalex-extension/popup.js
+const API_BASE = 'https://naijalex.quikdb.net';
+const FRONTEND_BASE = 'https://naijalex-frontend.quikdb.net';
+```
+
+During local testing you can load the extension as an unpacked extension in Chrome. For production, publish to the Chrome Web Store per Google's guidelines; the extension will call the QuikDB backend.
 
 ## Project Structure
 
