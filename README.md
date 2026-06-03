@@ -218,3 +218,4 @@ The app supports a "Demo Mode" toggle (in development) that uses mock responses 
 ## License
 
 Built for AfriLab Lagos Hackathon.
+
