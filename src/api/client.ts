@@ -21,10 +21,34 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://naijalex.quikdb.n
 const DEMO_STORE_KEY = 'naijalex_demo_store';
 const MODE_KEY = 'naijalex_mode';
 
+const AUTH_TOKEN_KEY = 'naijalex_auth_token';
+
 const liveApi = axios.create({
   baseURL: API_BASE,
   timeout: 60000,
 });
+
+liveApi.interceptors.request.use((config) => {
+  const token = typeof window !== 'undefined'
+    ? window.localStorage.getItem(AUTH_TOKEN_KEY)
+    : null;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export const setAuthToken = (token: string): void => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(AUTH_TOKEN_KEY, token);
+  }
+};
+
+export const clearAuthToken = (): void => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.removeItem(AUTH_TOKEN_KEY);
+  }
+};
 
 type DemoAnalysisRecord = AnalysisResult & {
   filename: string;

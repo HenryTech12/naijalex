@@ -54,9 +54,9 @@ createServer(async (request, response) => {
     } catch {
       await sendFile(response, join(rootDir, 'index.html'));
     }
-  } catch (error) {
+  } catch {
     response.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
-    response.end(error instanceof Error ? error.message : 'Internal server error');
+    response.end('Internal server error');
   }
 }).listen(port, '0.0.0.0', () => {
   console.log(`Static server listening on http://0.0.0.0:${port}`);

@@ -18,6 +18,10 @@ const INDUSTRIES = ['Retail/Trading', 'Technology', 'Real Estate', 'Services', '
 const RISK_TOLERANCES = ['low', 'medium', 'high'] as const;
 const TYPICAL_CONTRACTS = ['lease', 'supplier agreement', 'employment contract', 'service agreement', 'NDA', 'partnership agreement'];
 
+const PHONE_REGEX = /^\+[1-9]\d{6,14}$/;
+const isValidPhone = (phone: string): boolean =>
+  phone === '' || PHONE_REGEX.test(phone);
+
 export const Analyze: React.FC = () => {
   const { userId, analysisRequestId, setAnalysisRequestId } = useApp();
   const { createProfile, isCreating } = useUser();
@@ -40,6 +44,10 @@ export const Analyze: React.FC = () => {
     e.preventDefault();
     if (!businessType || !industry) {
       toast.error('Please fill in required fields.');
+      return;
+    }
+    if (phoneNumber && !isValidPhone(phoneNumber)) {
+      toast.error('Phone number must be in E.164 format (e.g. +2348012345678).');
       return;
     }
     try {
