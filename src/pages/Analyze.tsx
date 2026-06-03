@@ -52,7 +52,8 @@ export const Analyze: React.FC = () => {
       };
       await createProfile(payload);
       toast.success('Profile created!');
-    } catch {
+    } catch (err) {
+      console.error('[NaijaLex] Profile creation failed:', err);
       toast.error('Failed to create profile.');
     }
   };
@@ -66,7 +67,8 @@ export const Analyze: React.FC = () => {
       setIsProcessing(true);
       setIsUploading(false);
       toast.success(`Analysis started! Estimated: ${res.estimated_seconds}s`);
-    } catch {
+    } catch (err) {
+      console.error('[NaijaLex] Document upload failed:', err);
       toast.error('Failed to upload document. Please try again.');
       setIsUploading(false);
     }
@@ -299,7 +301,8 @@ const ProcessingStateWithPolling: React.FC<{
           clearInterval(interval);
           toast.error('Analysis timed out. Please try again.');
         }
-      } catch {
+      } catch (err) {
+        console.error('[NaijaLex] Polling error in ProcessingStateWithPolling:', err);
         clearInterval(interval);
         toast.error('Connection error during analysis.');
       }

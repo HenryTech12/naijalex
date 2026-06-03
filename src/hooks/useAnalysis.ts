@@ -55,6 +55,7 @@ export const useAnalysis = (analysisId: string | null, userId?: string | null): 
         stopPolling();
       }
     } catch (err) {
+      console.error('[NaijaLex] Polling error for analysis:', analysisId, err);
       setError('Failed to fetch analysis. Please check your connection.');
       setIsLoading(false);
       stopPolling();

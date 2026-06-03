@@ -124,8 +124,8 @@ const readDemoStore = (): DemoStore => {
   if (raw) {
     try {
       return JSON.parse(raw) as DemoStore;
-    } catch {
-      // fall through to seed
+    } catch (err) {
+      console.warn('[NaijaLex] Corrupt demo store in localStorage, re-seeding:', err);
     }
   }
 
@@ -351,8 +351,13 @@ const demoSendChatQuestion = (analysisId: string, payload: ChatRequest): ChatRes
 };
 
 async function requestWithFallback<T>(path: string, config?: AxiosRequestConfig): Promise<T> {
-  const response = await liveApi.request<T>({ url: path, ...(config || {}) });
-  return response.data;
+  try {
+    const response = await liveApi.request<T>({ url: path, ...(config || {}) });
+    return response.data;
+  } catch (error) {
+    console.error(`[NaijaLex] API request failed: ${config?.method ?? 'GET'} ${path}`, error);
+    throw error;
+  }
 }
 
 const isDemo = (mode?: ApiMode): boolean => (mode ?? getApiMode()) === 'demo';

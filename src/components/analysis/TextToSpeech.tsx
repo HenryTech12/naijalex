@@ -74,7 +74,10 @@ export const TextToSpeech: React.FC<TextToSpeechProps> = ({
     utterance.pitch = 1.05;
 
     utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
+    utterance.onerror = (event) => {
+      console.warn('[NaijaLex] Speech synthesis error:', event.error);
+      setIsSpeaking(false);
+    };
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
     setIsSpeaking(true);
