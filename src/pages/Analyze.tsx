@@ -179,7 +179,7 @@ export const Analyze: React.FC = () => {
                               : 'bg-brand-bg border-brand-border text-brand-textSecondary hover:border-primary/50'
                           }`}
                         >
-                          {r.charAt(0).toUpperCase() + r.slice(1)}
+                          {r ? r.charAt(0).toUpperCase() + r.slice(1) : ''}
                         </button>
                       ))}
                     </div>
