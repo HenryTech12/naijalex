@@ -19,7 +19,7 @@ const RISK_TOLERANCES = ['low', 'medium', 'high'] as const;
 const TYPICAL_CONTRACTS = ['lease', 'supplier agreement', 'employment contract', 'service agreement', 'NDA', 'partnership agreement'];
 
 export const Analyze: React.FC = () => {
-  const { userId, setAnalysisRequestId } = useApp();
+  const { userId, analysisRequestId, setAnalysisRequestId } = useApp();
   const { createProfile, isCreating } = useUser();
   const navigate = useNavigate();
 
@@ -34,7 +34,6 @@ export const Analyze: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [languageMode, setLanguageMode] = useState<LanguageMode>('english');
   const [isUploading, setIsUploading] = useState(false);
-  const [analysisRequestId, setLocalAnalysisId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
@@ -63,7 +62,6 @@ export const Analyze: React.FC = () => {
     setIsUploading(true);
     try {
       const res = await analyzeDocument(file, userId, languageMode);
-      setLocalAnalysisId(res.analysis_id);
       setAnalysisRequestId(res.analysis_id);
       setIsProcessing(true);
       setIsUploading(false);
@@ -126,7 +124,7 @@ export const Analyze: React.FC = () => {
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
                         placeholder="+2348012345678"
-                        className="w-full pl-10 pr-4 py-3 bg-brand-bg border border-brand-border rounded-xl text-brand-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                        className="w-full pl-10 pr-4 py-3 bg-brand-bg border border-brand-border rounded-xl text-brand-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bord[...]
                       />
                     </div>
                   </div>
@@ -138,7 +136,7 @@ export const Analyze: React.FC = () => {
                     <select
                       value={businessType}
                       onChange={(e) => setBusinessType(e.target.value)}
-                      className="w-full px-4 py-3 bg-brand-bg border border-brand-border rounded-xl text-brand-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="w-full px-4 py-3 bg-brand-bg border border-brand-border rounded-xl text-brand-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-prima[...]
                     >
                       <option value="">Select business type...</option>
                       {BUSINESS_TYPES.map((b) => (
@@ -154,7 +152,7 @@ export const Analyze: React.FC = () => {
                     <select
                       value={industry}
                       onChange={(e) => setIndustry(e.target.value)}
-                      className="w-full px-4 py-3 bg-brand-bg border border-brand-border rounded-xl text-brand-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="w-full px-4 py-3 bg-brand-bg border border-brand-border rounded-xl text-brand-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-prima[...]
                     >
                       <option value="">Select industry...</option>
                       {INDUSTRIES.map((i) => (
@@ -210,7 +208,7 @@ export const Analyze: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isCreating || !businessType || !industry}
-                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-600 disabled:bg-primary/50 text-white px-6 py-3.5 rounded-xl font-semibold transition-all duration-200 shadow-sm"
+                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-600 disabled:bg-primary/50 text-white px-6 py-3.5 rounded-xl font-semibold transition-all [...]
                   >
                     {isCreating ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -248,7 +246,7 @@ export const Analyze: React.FC = () => {
                   <button
                     onClick={handleAnalyze}
                     disabled={!file || isUploading}
-                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-600 disabled:bg-primary/40 disabled:cursor-not-allowed text-white px-6 py-4 rounded-xl font-semibold text-base transition-all duration-200 shadow-sm hover:shadow-md"
+                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-600 disabled:bg-primary/40 disabled:cursor-not-allowed text-white px-6 py-4 rounded-xl fon[...]
                   >
                     {isUploading ? (
                       <>
