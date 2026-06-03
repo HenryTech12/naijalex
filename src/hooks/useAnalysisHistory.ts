@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getAnalysisHistory, getCurrentApiMode } from '../api/client';
 import type { DocumentHistoryItem } from '../types';
 
@@ -15,7 +15,7 @@ export const useAnalysisHistory = (userId: string | null): UseAnalysisHistoryRes
   const [error, setError] = useState<string | null>(null);
   const effectiveUserId = userId || (getCurrentApiMode() === 'demo' ? 'demo-user' : null);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     if (!effectiveUserId) {
       setItems([]);
       setError(null);
@@ -24,6 +24,7 @@ export const useAnalysisHistory = (userId: string | null): UseAnalysisHistoryRes
 
     setIsLoading(true);
     setError(null);
+
     try {
       const response = await getAnalysisHistory(effectiveUserId);
       setItems(response.items);
@@ -32,11 +33,11 @@ export const useAnalysisHistory = (userId: string | null): UseAnalysisHistoryRes
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [effectiveUserId]);
 
   useEffect(() => {
     void refresh();
-  }, [effectiveUserId]);
+  }, [refresh]);
 
   return { items, isLoading, error, refresh };
 };
