@@ -232,7 +232,9 @@ export const EndpointForm: React.FC<EndpointFormProps> = ({ endpoint, onResponse
             refresh: shouldRefresh,
             redirect: false,
           });
-          setRiskCardUrl(riskCardRes.risk_card_url);
+          if (riskCardRes.risk_card_url) {
+            setRiskCardUrl(riskCardRes.risk_card_url);
+          }
           result = {
             status: 200,
             headers: {},

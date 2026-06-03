@@ -124,7 +124,7 @@ export const Analyze: React.FC = () => {
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
                         placeholder="+2348012345678"
-                        className="w-full pl-10 pr-4 py-3 bg-brand-bg border border-brand-border rounded-xl text-brand-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bord[...]
+                        className="w-full pl-10 pr-4 py-3 bg-brand-bg border border-brand-border rounded-xl text-brand-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                       />
                     </div>
                   </div>
@@ -136,7 +136,7 @@ export const Analyze: React.FC = () => {
                     <select
                       value={businessType}
                       onChange={(e) => setBusinessType(e.target.value)}
-                      className="w-full px-4 py-3 bg-brand-bg border border-brand-border rounded-xl text-brand-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-prima[...]
+                      className="w-full px-4 py-3 bg-brand-bg border border-brand-border rounded-xl text-brand-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                     >
                       <option value="">Select business type...</option>
                       {BUSINESS_TYPES.map((b) => (
@@ -152,7 +152,7 @@ export const Analyze: React.FC = () => {
                     <select
                       value={industry}
                       onChange={(e) => setIndustry(e.target.value)}
-                      className="w-full px-4 py-3 bg-brand-bg border border-brand-border rounded-xl text-brand-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-prima[...]
+                      className="w-full px-4 py-3 bg-brand-bg border border-brand-border rounded-xl text-brand-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                     >
                       <option value="">Select industry...</option>
                       {INDUSTRIES.map((i) => (
@@ -208,7 +208,7 @@ export const Analyze: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isCreating || !businessType || !industry}
-                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-600 disabled:bg-primary/50 text-white px-6 py-3.5 rounded-xl font-semibold transition-all [...]
+                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-600 disabled:bg-primary/50 text-white px-6 py-3.5 rounded-xl font-semibold transition-all duration-200 shadow-sm"
                   >
                     {isCreating ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -246,7 +246,7 @@ export const Analyze: React.FC = () => {
                   <button
                     onClick={handleAnalyze}
                     disabled={!file || isUploading}
-                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-600 disabled:bg-primary/40 disabled:cursor-not-allowed text-white px-6 py-4 rounded-xl fon[...]
+                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-600 disabled:bg-primary/40 disabled:cursor-not-allowed text-white px-6 py-4 rounded-xl font-semibold text-base transition-all duration-200 shadow-sm hover:shadow-md"
                   >
                     {isUploading ? (
                       <>

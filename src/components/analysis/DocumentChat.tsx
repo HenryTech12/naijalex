@@ -233,12 +233,12 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({
                         : 'Ask anything about this contract...'
                     }
                     disabled={isLoading}
-                    className="flex-1 px-4 py-2.5 text-sm bg-brand-bg border border-brand-border rounded-xl text-brand-textPrimary placeholder:text-brand-textSecondary focus:outline-none focus:ri[...]
+                    className="flex-1 px-4 py-2.5 text-sm bg-brand-bg border border-brand-border rounded-xl text-brand-textPrimary placeholder:text-brand-textSecondary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary disabled:opacity-50"
                   />
                   <button
                     onClick={() => sendMessage(input)}
                     disabled={!input.trim() || isLoading}
-                    className="w-10 h-10 flex items-center justify-center bg-primary hover:bg-primary-600 disabled:bg-primary/40 disabled:cursor-not-allowed text-white rounded-xl transition-color[...]
+                    className="w-10 h-10 flex items-center justify-center bg-primary hover:bg-primary-600 disabled:bg-primary/40 disabled:cursor-not-allowed text-white rounded-xl transition-colors shrink-0"
                   >
                     {isLoading ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
