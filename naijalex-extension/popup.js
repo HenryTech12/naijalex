@@ -1,4 +1,4 @@
-const API_BASE = 'https://naijalex.onrender.com';
+const API_BASE = 'https://naijalex.quikdb.net';
 const FRONTEND_BASE = 'https://naijalex.quikdb.net';
 
 let selectedFile = null;
@@ -8,7 +8,7 @@ let currentAnalysisId = null;
 let pollInterval = null;
 let pollCount = 0;
 
-// ── Init ──────────────────────────────────────────────────────────────────────
+// ── Init ────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', async () => {
   restoreState();
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('resetBtn').addEventListener('click', () => resetToUpload());
 });
 
-// ── Language toggle ────────────────────────────────────────────────────────────
+// ── Language toggle ────────────────────────────────────────────────────────
 
 function setLang(mode) {
   languageMode = mode;
@@ -31,7 +31,7 @@ function setLang(mode) {
   document.getElementById('btnPg').classList.toggle('active', mode === 'pidgin');
 }
 
-// ── PDF detection ──────────────────────────────────────────────────────────────
+// ── PDF detection ─────────────────────────────────────────────────────────
 
 async function detectPdfOnPage() {
   try {
@@ -62,7 +62,7 @@ async function detectPdfOnPage() {
   } catch {}
 }
 
-// ── File upload ────────────────────────────────────────────────────────────────
+// ── File upload ──────────────────────────────────────────────────────────
 
 function setupUploadArea() {
   const area = document.getElementById('uploadArea');
@@ -125,7 +125,7 @@ function handleFileSelect(file) {
   document.getElementById('analyzeBtn').disabled = false;
 }
 
-// ── Analysis flow ─────────────────────────────────────────────────────────────
+// ── Analysis flow ─��───────────────────────────────────────────────────────
 
 async function startAnalysis() {
   clearError();
@@ -151,10 +151,23 @@ async function startAnalysis() {
       formData.append('file', selectedFile);
     } else if (selectedUrl) {
       updateProcessingStep('Fetching document from page...');
-      const resp = await fetch(selectedUrl);
-      const blob = await resp.blob();
-      const filename = selectedUrl.split('/').pop()?.split('?')[0] || 'contract.pdf';
-      formData.append('file', blob, filename);
+      try {
+        const resp = await fetch(selectedUrl);
+
+        if (!resp.ok) {
+          throw new Error('Could not fetch PDF');
+        }
+
+        const blob = await resp.blob();
+        const filename = selectedUrl.split('/').pop()?.split('?')[0] || 'contract.pdf';
+        formData.append('file', blob, filename);
+      } catch (err) {
+        showError(
+          'Could not fetch the PDF from this page. Please download it and upload manually.'
+        );
+        showScreen('upload');
+        return;
+      }
     } else {
       showError('No file or URL selected.');
       showScreen('upload');
@@ -261,7 +274,7 @@ function openFullAnalysis() {
   }
 }
 
-// ── User creation ─────────────────────────────────────────────────────────────
+// ── User creation ─────────────────────────────────────────────────────────
 
 async function createUser() {
   const res = await fetch(`${API_BASE}/api/v1/users/`, {
@@ -279,7 +292,7 @@ async function createUser() {
   return data.id;
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────
 
 function showScreen(name) {
   document.getElementById('screen-upload').style.display = name === 'upload' ? 'block' : 'none';
