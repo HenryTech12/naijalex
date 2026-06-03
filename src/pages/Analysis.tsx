@@ -1,4 +1,4 @@
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { Download, RefreshCw, FileText, Loader2, AlertCircle, ExternalLink, Copy, Check, Eye, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -20,7 +20,6 @@ import type { RiskCardResponse } from '../types';
 export const Analysis: React.FC = () => {
   const { analysisId, userId } = useParams<{ analysisId: string; userId?: string }>();
   const { addAnalysis, setAnalysisId, setRiskCardUrl } = useApp();
-  const navigate = useNavigate();
   const chatSectionRef = useRef<HTMLDivElement | null>(null);
   const { analysis, isLoading, isComplete, error } = useAnalysis(analysisId ?? null, userId ?? null);
 
@@ -197,7 +196,7 @@ export const Analysis: React.FC = () => {
               {analysis.risk_card_url && !riskCardData && (
                 <button
                   onClick={() => fetchRiskCard(riskCardRefresh, riskCardRedirect)}
-                  className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-primary border border-primary/30 bg-primary-50 hover:bg-primary-100 px-3 py-2 rounded-lg transition-colors"
+                  className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-primary border border-primary/30 bg-primary-50 hover:bg-primary-100 px-3 py-2 rounded-lg transition-color[...]
                 >
                   <Eye className="w-3.5 h-3.5" />
                   Load Risk Card
@@ -267,7 +266,7 @@ export const Analysis: React.FC = () => {
                         </button>
                         <button
                           onClick={() => copyToClipboard(riskCardData.risk_card_url)}
-                          className="flex items-center gap-1.5 text-xs font-medium text-brand-textSecondary border border-brand-border bg-white hover:bg-brand-bg px-3 py-2 rounded-lg transition-colors"
+                          className="flex items-center gap-1.5 text-xs font-medium text-brand-textSecondary border border-brand-border bg-white hover:bg-brand-bg px-3 py-2 rounded-lg transition-c[...]
                         >
                           {copiedUrl ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
                           {copiedUrl ? 'Copied!' : 'Copy URL'}
@@ -275,7 +274,7 @@ export const Analysis: React.FC = () => {
                         <button
                           onClick={() => fetchRiskCard(true, riskCardRedirect)}
                           disabled={isLoadingRiskCard}
-                          className="flex items-center gap-1.5 text-xs font-medium text-warning border border-warning/30 bg-warning-50 hover:bg-amber-100 px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
+                          className="flex items-center gap-1.5 text-xs font-medium text-warning border border-warning/30 bg-warning-50 hover:bg-amber-100 px-3 py-2 rounded-lg transition-colors di[...]
                         >
                           <RefreshCw className={`w-3.5 h-3.5 ${isLoadingRiskCard ? 'animate-spin' : ''}`} />
                           Refresh
@@ -330,7 +329,7 @@ export const Analysis: React.FC = () => {
                       <button
                         onClick={() => fetchRiskCard(!!analysis.risk_card_url || riskCardRefresh, riskCardRedirect)}
                         disabled={isLoadingRiskCard}
-                        className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-600 disabled:bg-primary/50 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                        className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-600 disabled:bg-primary/50 text-white px-4 py-2.5 rounded-lg text-sm font-medium trans[...]
                       >
                         {isLoadingRiskCard ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -396,7 +395,6 @@ export const Analysis: React.FC = () => {
                     </p>
                     <Link
                       to="/analyze"
-                      onClick={() => navigate('/analyze')}
                       className="inline-flex items-center gap-2 mt-4 bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
                     >
                       Try Another Document
