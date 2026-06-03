@@ -17,7 +17,7 @@ import type {
 
 export type ApiMode = 'live' | 'demo';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://naijalex.quikdb.net';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://naijalex.onrender.com';
 const DEMO_STORE_KEY = 'naijalex_demo_store';
 const MODE_KEY = 'naijalex_mode';
 
