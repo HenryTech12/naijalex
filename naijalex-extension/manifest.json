@@ -15,8 +15,8 @@
     }
   },
   "background": {
-    "service_worker": "background.js"
-  },
+  "scripts": ["background.js"]
+},
   "content_scripts": [
     {
       "matches": ["https://naijalex.quikdb.net/*", "https://naijalex-frontend.quikdb.net/*"],
