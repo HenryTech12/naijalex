@@ -161,7 +161,7 @@ export const Analysis: React.FC = () => {
     );
   }
 
-  const negotiationPackage = analysis.clauses
+  const negotiationPackage = (analysis.clauses ?? [])
     .filter((c) => (c.action === 'Negotiate' || c.action === 'Remove') && c.replacement_language)
     .map((c) => `## ${c.title}\n\nOriginal Issue: ${c.risk_type}\n\nSuggested Counter-Language:\n${c.replacement_language}`)
     .join('\n\n---\n\n');
@@ -188,7 +188,7 @@ export const Analysis: React.FC = () => {
                     &bull; {analysis.language_mode === 'pidgin' ? 'Lagos Pidgin' : 'English'}
                   </span>
                   <TextToSpeech
-                    text={`Overall risk: ${analysis.overall_risk}. ${analysis.summary}. Top actions: ${analysis.top_3_actions.join('. ')}`}
+                    text={`Overall risk: ${analysis.overall_risk}. ${analysis.summary}. Top actions: ${analysis.top_3_actions?.join('. ') ?? 'None'}`}
                     label="Listen to Summary"
                     size="sm"
                   />
@@ -232,7 +232,7 @@ export const Analysis: React.FC = () => {
             {/* Left column: summary + actions + risk card */}
             <div className="lg:col-span-1 space-y-6">
               <RiskSummaryCard
-                clauses={analysis.clauses}
+                clauses={analysis.clauses ?? []}
                 overallRisk={analysis.overall_risk}
                 summary={analysis.summary}
                 processingTimeMs={analysis.processing_time_ms}
@@ -384,7 +384,7 @@ export const Analysis: React.FC = () => {
                   Clause Analysis
                 </h2>
                 <p className="text-sm text-brand-textSecondary mb-5">
-                  {analysis.clauses.length} clauses found — sorted by urgency
+                  {(analysis.clauses ?? []).length} clauses found — sorted by urgency
                 </p>
 
                 {(analysis.clauses ?? []).length === 0 ? (
