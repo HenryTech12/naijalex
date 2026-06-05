@@ -33,7 +33,10 @@ export const useAnalysis = (analysisId: string | null, userId?: string | null): 
     if (!analysisId) return;
 
     try {
-      const result = userId ? await getSavedAnalysis(userId, analysisId) : await getAnalysis(analysisId);
+      const validUserId = userId && userId !== 'undefined' && userId !== 'null' ? userId : null;
+      const result = validUserId
+        ? await getSavedAnalysis(validUserId, analysisId)
+        : await getAnalysis(analysisId);
       setAnalysis(result);
 
       if (result.status === 'complete') {
