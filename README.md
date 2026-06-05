@@ -153,7 +153,7 @@ NaijaLex uses a **LangGraph StateGraph** with 3 specialized agents:
 
 ### Base URL
 ```
-https://naijalex.quikdb.net
+https://naijalex-backend.quikdb.net
 ```
 
 ### Endpoints
