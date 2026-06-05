@@ -126,7 +126,7 @@ npm run build
 
 2. Configure QuikDB environment variables (Dashboard → Project Settings) for the frontend and functions:
 
-- `VITE_API_BASE_URL=https://naijalex.quikdb.net`
+- `VITE_API_BASE_URL=https://naijalex-backend.quikdb.net`
 - `VITE_WHATSAPP_SANDBOX_NUMBER` — as applicable
 - `VITE_WHATSAPP_SANDBOX_JOIN_CODE` — as applicable
 - `VITE_WHATSAPP_SANDBOX_QR_URL` — optional
@@ -140,7 +140,7 @@ quikdb deploy site --path=./dist --name=naijalex-frontend
 ```
 
 4. Deploy the backend API to QuikDB (serverless functions or service):
-
+- `BACKEND DOCS=[https://naijalex-backend.quikdb.net](https://naijalex-backend.quikdb.net/docs)`
 ```bash
 # Example (adjust to your backend language/framework)
 quikdb deploy functions --path=./api --name=naijalex-api
@@ -149,7 +149,7 @@ quikdb deploy functions --path=./api --name=naijalex-api
 5. Verify deployment:
 
 - Frontend should be available at your QuikDB site URL (set in QuikDB dashboard).
-- API endpoints should be reachable at `https://naijalex.quikdb.net/api/v1/...`.
+- API endpoints should be reachable at `https://naijalex-backend.quikdb.net/api/v1/...`.
 
 Notes:
 - If you use a custom domain, configure DNS in the QuikDB dashboard and update `VITE_API_BASE_URL` to the custom domain.
@@ -178,6 +178,7 @@ The Chrome extension bundle (`naijalex-extension/`) is a lightweight popup that 
 ```js
 // naijalex-extension/popup.js
 const FRONTEND_BASE = 'https://naijalex.quikdb.net';
+const API_URL = 'https://naijalex-backend.quikdb.net'
 ```
 
 During local testing you can load the extension as an unpacked extension in Chrome. For production, publish to the Chrome Web Store per Google's guidelines; the extension will call the QuikDB backend.
@@ -218,3 +219,4 @@ The app supports a "Demo Mode" toggle (in development) that uses mock responses 
 ## License
 
 Built for AfriLab Lagos Hackathon.
+
