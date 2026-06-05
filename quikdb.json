@@ -1,0 +1,12 @@
+{
+  "name": "naijalex-frontend",
+  "runtime": "nodejs",
+  "buildCommand": "npm install && npm run build",
+  "startCommand": "npm run start",
+  "port": 4173,
+  "env": {
+    "VITE_API_BASE_URL": "https://naijalex-backend.quikdb.net",
+    "VITE_WHATSAPP_SANDBOX_NUMBER": "+14155238886",
+    "VITE_WHATSAPP_SANDBOX_JOIN_CODE": "join various-mill"
+  }
+}
