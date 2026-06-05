@@ -9,7 +9,7 @@ import { useAnalysisHistory } from '../hooks/useAnalysisHistory';
 export const History: React.FC = () => {
   const params = useParams<{ userId?: string }>();
   const { userId: currentUserId, businessLabel, mode } = useApp();
-  const userId = params.userId || currentUserId;
+  const userId = params.userId || currentUserId || null;
   const { items, isLoading, error, refresh } = useAnalysisHistory(userId);
 
   return (

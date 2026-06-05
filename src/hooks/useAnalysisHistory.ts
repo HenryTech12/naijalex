@@ -9,7 +9,7 @@ interface UseAnalysisHistoryResult {
   refresh: () => Promise<void>;
 }
 
-export const useAnalysisHistory = (userId: string | null): UseAnalysisHistoryResult => {
+export const useAnalysisHistory = (userId: string | null | undefined): UseAnalysisHistoryResult => {
   const [items, setItems] = useState<DocumentHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
