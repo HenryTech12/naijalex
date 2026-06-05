@@ -33,6 +33,9 @@ export const Landing: React.FC = () => {
   const recentItems = (historyItems ?? []).slice(0, 3);
   const latestItem = (historyItems && historyItems.length > 0) ? historyItems[0] : null;
 
+  // Replace with your actual Twilio number (e.g., https://wa.me/14155238886?text=Join%20NaijaLex)
+  const whatsappUrl = "https://wa.me/+14155238886?text=join various-mill%20NaijaLex";
+
   const summaryCards = [
     {
       label: 'Runtime mode',
@@ -98,6 +101,18 @@ export const Landing: React.FC = () => {
                 <FileText className="w-4 h-4" />
                 Analyze a document
               </Link>
+              
+              {/* Added WhatsApp Redirect Bot Button */}
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-6 py-3.5 font-semibold text-white shadow-lg transition-all hover:bg-[#20ba5a] hover:shadow-[#25D366]/30"
+              >
+                <MessageCircle className="w-4 h-4" />
+                Try on WhatsApp
+              </a>
+
               <Link
                 to={userId ? `/history/${userId}` : '/explorer'}
                 className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 px-6 py-3.5 font-medium text-white transition-colors hover:border-white/40 hover:bg-white/5"
