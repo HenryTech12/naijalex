@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Loader2, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Navbar } from '../components/layout/Navbar';
-import { Footer } from '../components/layout/Footer';
+import { PageLayout } from '../components/shared/PageLayout';
 import { DropZone } from '../components/upload/DropZone';
 import { LanguageToggle } from '../components/upload/LanguageToggle';
 import { ProcessingState } from '../components/analysis/ProcessingState';
@@ -90,21 +89,19 @@ export const Analyze: React.FC = () => {
 
   if (isProcessing && analysisRequestId) {
     return (
-      <div className="min-h-screen bg-brand-bg">
-        <Navbar />
+      <PageLayout showFooter={false}>
         <div className="pt-20 max-w-3xl mx-auto px-4">
           <ProcessingStateWithPolling
             analysisId={analysisRequestId}
             onComplete={(id) => navigate(`/analysis/${id}`)}
           />
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-brand-bg flex flex-col">
-      <Navbar />
+    <PageLayout>
       <main className="flex-1 pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
           <AnimatePresence mode="wait">
@@ -276,8 +273,7 @@ export const Analyze: React.FC = () => {
           </AnimatePresence>
         </div>
       </main>
-      <Footer />
-    </div>
+    </PageLayout>
   );
 };
 

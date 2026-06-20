@@ -12,8 +12,9 @@ import {
   Upload,
   Zap,
 } from 'lucide-react';
-import { Navbar } from '../components/layout/Navbar';
-import { Footer } from '../components/layout/Footer';
+import { PageLayout } from '../components/shared/PageLayout';
+import { GridBackground } from '../components/shared/GridBackground';
+import { ModeToggle } from '../components/shared/ModeToggle';
 import { HistoryRow } from '../components/history/HistoryRow';
 import { useApp } from '../contexts/AppContext';
 import { useAnalysisHistory } from '../hooks/useAnalysisHistory';
@@ -61,18 +62,9 @@ export const Landing: React.FC = () => {
   ];
 
   return (
-    <div className="bg-brand-bg min-h-screen flex flex-col">
-      <Navbar />
-
+    <PageLayout>
       <section className="relative overflow-hidden bg-brand-textPrimary pt-28 pb-20">
-        <div
-          className="absolute inset-0 opacity-[0.05]"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(29,158,117,1) 1px, transparent 1px), linear-gradient(90deg, rgba(29,158,117,1) 1px, transparent 1px)',
-            backgroundSize: '56px 56px',
-          }}
-        />
+        <GridBackground opacity="0.05" />
         <div className="absolute inset-0 bg-gradient-to-br from-brand-textPrimary via-brand-textPrimary to-primary-900/40" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -155,24 +147,7 @@ export const Landing: React.FC = () => {
                     <p className="text-xs uppercase tracking-wide text-brand-textSecondary">Quick actions</p>
                     <h2 className="text-lg font-bold text-brand-textPrimary mt-1">Start from the next step</h2>
                   </div>
-                  <div className="flex items-center gap-2 rounded-xl border border-brand-border bg-brand-bg p-1">
-                    <button
-                      onClick={() => setMode('live')}
-                      className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                        mode === 'live' ? 'bg-white text-brand-textPrimary shadow-sm' : 'text-brand-textSecondary'
-                      }`}
-                    >
-                      Live API
-                    </button>
-                    <button
-                      onClick={() => setMode('demo')}
-                      className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                        mode === 'demo' ? 'bg-primary-50 text-primary' : 'text-brand-textSecondary'
-                      }`}
-                    >
-                      Demo
-                    </button>
-                  </div>
+                  <ModeToggle mode={mode} onModeChange={setMode} variant="compact" />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -320,7 +295,6 @@ export const Landing: React.FC = () => {
         </div>
       </main>
 
-      <Footer />
-    </div>
+    </PageLayout>
   );
 };

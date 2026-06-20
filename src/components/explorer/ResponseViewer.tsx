@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Copy, Check, AlertCircle, CheckCircle2, FileText } from 'lucide-react';
-import toast from 'react-hot-toast';
 import { clsx } from 'clsx';
+import { useClipboard } from '../../hooks/useClipboard';
 
 interface ResponseViewerProps {
   response: { status: number; headers: Record<string, string>; data: unknown } | null;
@@ -9,32 +9,8 @@ interface ResponseViewerProps {
 }
 
 export const ResponseViewer: React.FC<ResponseViewerProps> = ({ response, error }) => {
-  const [copied, setCopied] = useState(false);
-  const [copiedError, setCopiedError] = useState(false);
-
-  const copyResponse = async () => {
-    if (!response?.data) return;
-    try {
-      await navigator.clipboard.writeText(JSON.stringify(response.data, null, 2));
-      setCopied(true);
-      toast.success('Response copied!');
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error('Failed to copy.');
-    }
-  };
-
-  const copyError = async () => {
-    if (!error) return;
-    try {
-      await navigator.clipboard.writeText(error);
-      setCopiedError(true);
-      toast.success('Error copied!');
-      setTimeout(() => setCopiedError(false), 2000);
-    } catch {
-      toast.error('Failed to copy.');
-    }
-  };
+  const { copied, copy: copyResponse } = useClipboard({ successMessage: 'Response copied!' });
+  const { copied: copiedError, copy: copyError } = useClipboard({ successMessage: 'Error copied!' });
 
   if (!response && !error) {
     return (
@@ -58,7 +34,7 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({ response, error 
           <span className="text-sm font-medium text-danger">Error</span>
           <div className="flex-1" />
           <button
-            onClick={copyError}
+            onClick={() => { if (error) copyError(error); }}
             className="flex items-center gap-1 text-xs text-danger hover:underline"
           >
             {copiedError ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
@@ -100,7 +76,7 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({ response, error 
         </span>
         <div className="flex-1" />
         <button
-          onClick={copyResponse}
+          onClick={() => { if (response?.data) copyResponse(JSON.stringify(response.data, null, 2)); }}
           className="flex items-center gap-1 text-xs text-brand-textSecondary hover:text-brand-textPrimary transition-colors"
         >
           {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}

@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, Copy, Check, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import toast from 'react-hot-toast';
 import { clsx } from 'clsx';
 import { RiskBadge } from './RiskBadge';
 import { TextToSpeech } from './TextToSpeech';
+import { useClipboard } from '../../hooks/useClipboard';
+import { formatNaira } from '../../utils/format';
 import type { ClauseAnalysis, LanguageMode } from '../../types';
 
 interface ClauseCardProps {
@@ -12,13 +13,10 @@ interface ClauseCardProps {
   defaultLanguage: LanguageMode;
 }
 
-const formatNaira = (amount: number): string =>
-  `₦${amount.toLocaleString('en-NG')}`;
-
 export const ClauseCard: React.FC<ClauseCardProps> = ({ clause, defaultLanguage }) => {
   const [activeLanguage, setActiveLanguage] = useState<LanguageMode>(defaultLanguage);
   const [showOriginal, setShowOriginal] = useState(false);
-  const [copiedCounter, setCopiedCounter] = useState(false);
+  const { copied: copiedCounter, copy } = useClipboard({ successMessage: 'Copied! ✓' });
 
   const severityBg: Record<string, string> = {
     Critical: 'border-l-danger',
@@ -26,18 +24,7 @@ export const ClauseCard: React.FC<ClauseCardProps> = ({ clause, defaultLanguage 
     Standard: 'border-l-primary',
   };
 
-  const copyToClipboard = async (text: string, type: 'counter' | 'package') => {
-    try {
-      await navigator.clipboard.writeText(text);
-      if (type === 'counter') setCopiedCounter(true);
-      toast.success('Copied! ✓');
-      setTimeout(() => {
-        if (type === 'counter') setCopiedCounter(false);
-      }, 2000);
-    } catch {
-      toast.error('Could not copy to clipboard.');
-    }
-  };
+
 
   return (
     <div
@@ -157,7 +144,7 @@ export const ClauseCard: React.FC<ClauseCardProps> = ({ clause, defaultLanguage 
                   Suggested Counter-Language
                 </p>
                 <button
-                  onClick={() => copyToClipboard(clause.replacement_language!, 'counter')}
+                  onClick={() => copy(clause.replacement_language!)}
                   className="flex items-center gap-1.5 text-xs text-primary hover:text-primary-700 font-medium transition-colors bg-white border border-green-200 px-2.5 py-1 rounded-lg hover:bg-green-50"
                 >
                   {copiedCounter ? (

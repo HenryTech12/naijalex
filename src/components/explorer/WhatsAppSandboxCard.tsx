@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Check, Copy, ExternalLink, MessageCircle, QrCode } from 'lucide-react';
+import { useClipboard } from '../../hooks/useClipboard';
 
 const SANDBOX_NUMBER = import.meta.env.VITE_WHATSAPP_SANDBOX_NUMBER || '';
 const SANDBOX_JOIN_CODE = import.meta.env.VITE_WHATSAPP_SANDBOX_JOIN_CODE || '';
@@ -16,6 +17,7 @@ const toWaDeepLink = (phoneNumber: string, joinCode: string): string => {
 
 export const WhatsAppSandboxCard: React.FC = () => {
   const [copiedField, setCopiedField] = useState<'number' | 'code' | null>(null);
+  const { copy } = useClipboard();
 
   const whatsappDeepLink = useMemo(() => {
     return SANDBOX_DEEPLINK || toWaDeepLink(SANDBOX_NUMBER, SANDBOX_JOIN_CODE);
@@ -25,9 +27,9 @@ export const WhatsAppSandboxCard: React.FC = () => {
 
   const copyText = async (value: string, field: 'number' | 'code') => {
     if (!value) return;
-    await navigator.clipboard.writeText(value);
+    await copy(value);
     setCopiedField(field);
-    window.setTimeout(() => setCopiedField(null), 2000);
+    setTimeout(() => setCopiedField(null), 2000);
   };
 
   return (
